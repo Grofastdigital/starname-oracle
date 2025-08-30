@@ -13,13 +13,26 @@ serve(async (req) => {
   }
 
   try {
-    console.log("=== Payment Verification Started ===");
+    console.log("=== PAYMENT VERIFICATION DEBUG START ===");
     
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
     const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    const razorpayKeySecret = Deno.env.get("RAZORPAY_KEY_SECRET");
+    
+    console.log("Environment check:");
+    console.log("- SUPABASE_URL:", supabaseUrl ? "✓ Set" : "✗ Missing");
+    console.log("- SUPABASE_ANON_KEY:", supabaseAnonKey ? "✓ Set" : "✗ Missing");
+    console.log("- SUPABASE_SERVICE_ROLE_KEY:", supabaseServiceKey ? "✓ Set" : "✗ Missing");
+    console.log("- RAZORPAY_KEY_SECRET:", razorpayKeySecret ? "✓ Set" : "✗ Missing");
     
     if (!supabaseUrl || !supabaseAnonKey) {
       throw new Error("Missing Supabase environment variables");
+    }
+
+    if (!razorpayKeySecret) {
+      console.error("RAZORPAY_KEY_SECRET is missing");
+      throw new Error("Razorpay key secret not configured");
     }
 
     const supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
@@ -37,52 +50,69 @@ serve(async (req) => {
       throw new Error("User not authenticated");
     }
 
-    console.log("Verifying payment for user:", user.id);
+    console.log("✓ User authenticated:", user.id);
 
-    const { razorpay_payment_id, razorpay_order_id, razorpay_signature } = await req.json();
-    
-    console.log("Payment details:", {
-      payment_id: razorpay_payment_id,
-      order_id: razorpay_order_id,
-      signature: razorpay_signature?.substring(0, 10) + "..."
-    });
-
-    // Verify payment with Razorpay
-    const razorpayKeySecret = Deno.env.get("RAZORPAY_KEY_SECRET");
-    
-    if (!razorpayKeySecret) {
-      throw new Error("Razorpay key secret not configured");
+    let requestBody;
+    try {
+      requestBody = await req.json();
+      console.log("Payment verification request:", JSON.stringify(requestBody, null, 2));
+    } catch (error) {
+      console.error("Failed to parse request body:", error);
+      throw new Error("Invalid request body");
     }
-    
-    // Create signature for verification
-    const crypto = await import("https://deno.land/std@0.190.0/crypto/mod.ts");
-    const encoder = new TextEncoder();
-    const key = await crypto.crypto.subtle.importKey(
-      "raw",
-      encoder.encode(razorpayKeySecret),
-      { name: "HMAC", hash: "SHA-256" },
-      false,
-      ["sign"]
-    );
-    
-    const signature = await crypto.crypto.subtle.sign(
-      "HMAC",
-      key,
-      encoder.encode(`${razorpay_order_id}|${razorpay_payment_id}`)
-    );
-    
-    const expectedSignature = Array.from(new Uint8Array(signature))
-      .map(b => b.toString(16).padStart(2, '0'))
-      .join('');
 
-    console.log("Signature verification result:", expectedSignature === razorpay_signature);
+    const { razorpay_payment_id, razorpay_order_id, razorpay_signature } = requestBody;
+    
+    console.log("Verification data:");
+    console.log("- payment_id:", razorpay_payment_id);
+    console.log("- order_id:", razorpay_order_id);
+    console.log("- signature present:", !!razorpay_signature);
 
-    if (expectedSignature !== razorpay_signature) {
-      throw new Error("Invalid payment signature");
+    if (!razorpay_payment_id || !razorpay_order_id || !razorpay_signature) {
+      throw new Error("Missing payment verification data");
+    }
+
+    // Verify payment signature with Razorpay
+    console.log("Verifying payment signature...");
+    
+    try {
+      const crypto = await import("https://deno.land/std@0.190.0/crypto/mod.ts");
+      const encoder = new TextEncoder();
+      const key = await crypto.crypto.subtle.importKey(
+        "raw",
+        encoder.encode(razorpayKeySecret),
+        { name: "HMAC", hash: "SHA-256" },
+        false,
+        ["sign"]
+      );
+      
+      const signature = await crypto.crypto.subtle.sign(
+        "HMAC",
+        key,
+        encoder.encode(`${razorpay_order_id}|${razorpay_payment_id}`)
+      );
+      
+      const expectedSignature = Array.from(new Uint8Array(signature))
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('');
+
+      console.log("Signature verification:");
+      console.log("- Expected signature:", expectedSignature.substring(0, 10) + "...");
+      console.log("- Received signature:", razorpay_signature.substring(0, 10) + "...");
+      console.log("- Match:", expectedSignature === razorpay_signature);
+
+      if (expectedSignature !== razorpay_signature) {
+        console.error("Signature verification failed");
+        throw new Error("Invalid payment signature");
+      }
+
+      console.log("✓ Payment signature verified");
+    } catch (error) {
+      console.error("Signature verification error:", error);
+      throw new Error(`Signature verification failed: ${error.message}`);
     }
 
     // Update payment status and add credits using service role
-    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
     if (!supabaseServiceKey) {
       throw new Error("Missing SUPABASE_SERVICE_ROLE_KEY");
     }
@@ -107,9 +137,10 @@ serve(async (req) => {
       throw new Error("Payment record not found");
     }
 
-    console.log("Found payment record with credits:", payment.credits_purchased);
+    console.log("✓ Found payment record:", JSON.stringify(payment, null, 2));
 
     // Update payment status
+    console.log("Updating payment status...");
     const { error: updatePaymentError } = await supabaseService
       .from("payments")
       .update({
@@ -123,9 +154,10 @@ serve(async (req) => {
       throw new Error("Failed to update payment status");
     }
 
-    console.log("Payment status updated to completed");
+    console.log("✓ Payment status updated to completed");
 
     // Add credits to user profile
+    console.log("Fetching user profile...");
     const { data: profile, error: profileError } = await supabaseService
       .from("user_profiles")
       .select("credits")
@@ -137,8 +169,10 @@ serve(async (req) => {
       throw new Error("Failed to get user profile");
     }
 
+    console.log("Current user profile:", JSON.stringify(profile, null, 2));
+
     const newCreditBalance = profile.credits + payment.credits_purchased;
-    console.log("Updating user credits from", profile.credits, "to", newCreditBalance);
+    console.log("Updating credits:", profile.credits, "→", newCreditBalance);
 
     const { error: creditUpdateError } = await supabaseService
       .from("user_profiles")
@@ -152,7 +186,7 @@ serve(async (req) => {
       throw new Error("Failed to update user credits");
     }
 
-    console.log("Credits updated successfully");
+    console.log("✓ Credits updated successfully");
 
     const responseData = {
       success: true,
@@ -160,7 +194,8 @@ serve(async (req) => {
       new_credit_balance: newCreditBalance
     };
 
-    console.log("Payment verification completed:", responseData);
+    console.log("✓ Payment verification completed:", JSON.stringify(responseData, null, 2));
+    console.log("=== PAYMENT VERIFICATION DEBUG END ===");
 
     return new Response(JSON.stringify(responseData), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -168,11 +203,16 @@ serve(async (req) => {
     });
 
   } catch (error) {
-    console.error("=== Payment Verification Error ===");
+    console.error("=== PAYMENT VERIFICATION ERROR ===");
+    console.error("Error type:", error.constructor.name);
     console.error("Error message:", error.message);
     console.error("Error stack:", error.stack);
     
-    return new Response(JSON.stringify({ error: error.message }), {
+    return new Response(JSON.stringify({ 
+      error: error.message,
+      type: error.constructor.name,
+      debug: "verification_exception"
+    }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 500,
     });
