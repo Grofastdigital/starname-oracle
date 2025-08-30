@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 import StarField from '@/components/StarField';
 import BirthForm from '@/components/BirthForm';
 import AstrologyResults from '@/components/AstrologyResults';

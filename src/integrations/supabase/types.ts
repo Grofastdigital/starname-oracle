@@ -14,7 +14,141 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      consultations: {
+        Row: {
+          birth_date: string
+          birth_location: string
+          birth_sign: string | null
+          birth_time: string
+          created_at: string | null
+          cultural_preference: string | null
+          gender: string
+          id: string
+          latitude: number | null
+          longitude: number | null
+          lucky_colors: string[] | null
+          lucky_numbers: number[] | null
+          name_theme: string | null
+          planetary_influence: string | null
+          preferred_language: string
+          recommendations: string[] | null
+          starts_with: string | null
+          status: string
+          suggested_names: Json | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          birth_date: string
+          birth_location: string
+          birth_sign?: string | null
+          birth_time: string
+          created_at?: string | null
+          cultural_preference?: string | null
+          gender: string
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          lucky_colors?: string[] | null
+          lucky_numbers?: number[] | null
+          name_theme?: string | null
+          planetary_influence?: string | null
+          preferred_language?: string
+          recommendations?: string[] | null
+          starts_with?: string | null
+          status?: string
+          suggested_names?: Json | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          birth_date?: string
+          birth_location?: string
+          birth_sign?: string | null
+          birth_time?: string
+          created_at?: string | null
+          cultural_preference?: string | null
+          gender?: string
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          lucky_colors?: string[] | null
+          lucky_numbers?: number[] | null
+          name_theme?: string | null
+          planetary_influence?: string | null
+          preferred_language?: string
+          recommendations?: string[] | null
+          starts_with?: string | null
+          status?: string
+          suggested_names?: Json | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      payments: {
+        Row: {
+          amount: number
+          created_at: string | null
+          credits_purchased: number
+          id: string
+          razorpay_order_id: string | null
+          razorpay_payment_id: string | null
+          status: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          credits_purchased: number
+          id?: string
+          razorpay_order_id?: string | null
+          razorpay_payment_id?: string | null
+          status?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          credits_purchased?: number
+          id?: string
+          razorpay_order_id?: string | null
+          razorpay_payment_id?: string | null
+          status?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string | null
+          credits: number
+          full_name: string | null
+          id: string
+          updated_at: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string | null
+          credits?: number
+          full_name?: string | null
+          id: string
+          updated_at?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string | null
+          credits?: number
+          full_name?: string | null
+          id?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
