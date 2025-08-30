@@ -1,13 +1,12 @@
-
 export interface BirthData {
-  date: Date;
-  time: string;
-  location: string;
+  birthDate: string;
+  birthTime: string;
+  birthLocation: string;
   gender: string;
-  cultural?: string;
+  culturalPreference?: string;
+  nameTheme?: string;
+  preferredLanguage: string;
   startsWith?: string;
-  preference?: string;
-  language?: string;
 }
 
 export interface AstrologyResult {
@@ -248,12 +247,13 @@ export const calculateAstrology = async (birthData: BirthData): Promise<Astrolog
   // Simulate API processing time
   await new Promise(resolve => setTimeout(resolve, 2000));
   
-  const zodiacSign = getZodiacSign(birthData.date);
-  const luckyNumbers = generateLuckyNumbers(birthData.date);
+  const birthDate = new Date(birthData.birthDate);
+  const zodiacSign = getZodiacSign(birthDate);
+  const luckyNumbers = generateLuckyNumbers(birthDate);
   const luckyColors = getLuckyColors(zodiacSign);
   
   // Get cultural preference or default
-  const cultural = birthData.cultural || "Hindu/Sanskrit Names";
+  const cultural = birthData.culturalPreference || "Hindu/Sanskrit Names";
   const gender = birthData.gender === 'unisex' ? Math.random() > 0.5 ? 'boy' : 'girl' : birthData.gender;
   
   let availableNames = nameDatabase[gender as keyof typeof nameDatabase][cultural] || 
@@ -270,8 +270,8 @@ export const calculateAstrology = async (birthData: BirthData): Promise<Astrolog
   }
   
   // Filter by preference theme if specified
-  if (birthData.preference) {
-    const preferenceKeywords = birthData.preference.toLowerCase().split(' ');
+  if (birthData.nameTheme) {
+    const preferenceKeywords = birthData.nameTheme.toLowerCase().split(' ');
     const filtered = availableNames.filter(name => 
       preferenceKeywords.some(keyword => 
         name.meaning.toLowerCase().includes(keyword) || 

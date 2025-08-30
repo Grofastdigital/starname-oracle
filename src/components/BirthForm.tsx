@@ -11,9 +11,10 @@ import { BirthData } from '@/utils/astrology';
 interface BirthFormProps {
   onSubmit: (data: BirthData) => void;
   isLoading: boolean;
+  disabled?: boolean;
 }
 
-const BirthForm = ({ onSubmit, isLoading }: BirthFormProps) => {
+const BirthForm = ({ onSubmit, isLoading, disabled = false }: BirthFormProps) => {
   const [formData, setFormData] = useState({
     date: '',
     time: '12:00',
@@ -30,14 +31,14 @@ const BirthForm = ({ onSubmit, isLoading }: BirthFormProps) => {
     if (!formData.date || !formData.location || !formData.gender) return;
 
     const birthData: BirthData = {
-      date: new Date(formData.date),
-      time: formData.time,
-      location: formData.location,
+      birthDate: formData.date,
+      birthTime: formData.time,
+      birthLocation: formData.location,
       gender: formData.gender,
-      cultural: formData.cultural || undefined,
-      startsWith: formData.startsWith || undefined,
-      preference: formData.preference || undefined,
-      language: formData.language
+      culturalPreference: formData.cultural || undefined,
+      nameTheme: formData.preference || undefined,
+      preferredLanguage: formData.language,
+      startsWith: formData.startsWith || undefined
     };
 
     onSubmit(birthData);
