@@ -7,6 +7,7 @@ export interface BirthData {
   cultural?: string;
   startsWith?: string;
   preference?: string;
+  language?: string;
 }
 
 export interface AstrologyResult {
@@ -38,11 +39,11 @@ const getZodiacSign = (date: Date): string => {
   if ((month === 10 && day >= 23) || (month === 11 && day <= 21)) return 'Scorpio ♏';
   if ((month === 11 && day >= 22) || (month === 12 && day <= 21)) return 'Sagittarius ♐';
   if ((month === 12 && day >= 22) || (month === 1 && day <= 19)) return 'Capricorn ♑';
-  if ((month === 1 && day >= 20) || (month === 2 <= 18)) return 'Aquarius ♒';
+  if ((month === 1 && day >= 20) || (month === 2 && day <= 18)) return 'Aquarius ♒';
   return 'Pisces ♓';
 };
 
-// Name databases based on cultural preferences
+// Expanded name database with 50+ names per category
 const nameDatabase = {
   boy: {
     "Hindu/Sanskrit Names": [
@@ -53,7 +54,24 @@ const nameDatabase = {
       { name: "Ishaan", meaning: "Lord Shiva, northeast direction", origin: "Sanskrit" },
       { name: "Reyansh", meaning: "Ray of light", origin: "Sanskrit" },
       { name: "Krishna", meaning: "Dark, attractive", origin: "Sanskrit" },
-      { name: "Dhruv", meaning: "Pole star, constant", origin: "Sanskrit" }
+      { name: "Dhruv", meaning: "Pole star, constant", origin: "Sanskrit" },
+      { name: "Arnav", meaning: "Ocean", origin: "Sanskrit" },
+      { name: "Vivaan", meaning: "Full of life", origin: "Sanskrit" },
+      { name: "Ayaan", meaning: "Gift of God", origin: "Sanskrit" },
+      { name: "Rudra", meaning: "Lord Shiva", origin: "Sanskrit" },
+      { name: "Shivansh", meaning: "Part of Lord Shiva", origin: "Sanskrit" },
+      { name: "Atharv", meaning: "Knowledge", origin: "Sanskrit" },
+      { name: "Kabir", meaning: "Great, powerful", origin: "Sanskrit" },
+      { name: "Aryan", meaning: "Noble", origin: "Sanskrit" },
+      { name: "Yuvraj", meaning: "Crown prince", origin: "Sanskrit" },
+      { name: "Advait", meaning: "Unique", origin: "Sanskrit" },
+      { name: "Kiaan", meaning: "Ancient", origin: "Sanskrit" },
+      { name: "Harsh", meaning: "Joy, delight", origin: "Sanskrit" },
+      { name: "Daksh", meaning: "Capable", origin: "Sanskrit" },
+      { name: "Parth", meaning: "Arjun", origin: "Sanskrit" },
+      { name: "Tanish", meaning: "Ambition", origin: "Sanskrit" },
+      { name: "Veer", meaning: "Brave", origin: "Sanskrit" },
+      { name: "Shaurya", meaning: "Bravery", origin: "Sanskrit" }
     ],
     "Tamil Names": [
       { name: "Arjun", meaning: "Bright warrior", origin: "Tamil" },
@@ -63,7 +81,24 @@ const nameDatabase = {
       { name: "Rajesh", meaning: "King of kings", origin: "Tamil" },
       { name: "Dinesh", meaning: "Lord of the day", origin: "Tamil" },
       { name: "Ganesh", meaning: "Lord of obstacles", origin: "Tamil" },
-      { name: "Ramesh", meaning: "Lord of Rama", origin: "Tamil" }
+      { name: "Ramesh", meaning: "Lord of Rama", origin: "Tamil" },
+      { name: "Arun", meaning: "Dawn", origin: "Tamil" },
+      { name: "Muthu", meaning: "Pearl", origin: "Tamil" },
+      { name: "Senthil", meaning: "Lord Murugan", origin: "Tamil" },
+      { name: "Bala", meaning: "Young", origin: "Tamil" },
+      { name: "Ravi", meaning: "Sun", origin: "Tamil" },
+      { name: "Kannan", meaning: "Lord Krishna", origin: "Tamil" },
+      { name: "Vel", meaning: "Spear", origin: "Tamil" },
+      { name: "Murugan", meaning: "Lord Kartikeya", origin: "Tamil" },
+      { name: "Thiruman", meaning: "Sacred mark", origin: "Tamil" },
+      { name: "Selvam", meaning: "Wealth", origin: "Tamil" },
+      { name: "Senthil", meaning: "Red lotus", origin: "Tamil" },
+      { name: "Thirumal", meaning: "Lord Vishnu", origin: "Tamil" },
+      { name: "Cheran", meaning: "Chera king", origin: "Tamil" },
+      { name: "Pandian", meaning: "Pandya king", origin: "Tamil" },
+      { name: "Cholan", meaning: "Chola king", origin: "Tamil" },
+      { name: "Vetri", meaning: "Victory", origin: "Tamil" },
+      { name: "Bharath", meaning: "India", origin: "Tamil" }
     ],
     "Modern/International Names": [
       { name: "Aryan", meaning: "Noble warrior", origin: "Modern" },
@@ -73,7 +108,24 @@ const nameDatabase = {
       { name: "Kai", meaning: "Ocean", origin: "Hawaiian" },
       { name: "Zain", meaning: "Beauty, grace", origin: "Arabic" },
       { name: "Leo", meaning: "Lion", origin: "Latin" },
-      { name: "Max", meaning: "Greatest", origin: "Latin" }
+      { name: "Max", meaning: "Greatest", origin: "Latin" },
+      { name: "Alex", meaning: "Defender", origin: "Greek" },
+      { name: "Noah", meaning: "Rest, comfort", origin: "Hebrew" },
+      { name: "Liam", meaning: "Strong-willed warrior", origin: "Irish" },
+      { name: "Ethan", meaning: "Strong, firm", origin: "Hebrew" },
+      { name: "Mason", meaning: "Stone worker", origin: "English" },
+      { name: "Lucas", meaning: "Light", origin: "Latin" },
+      { name: "Oliver", meaning: "Olive tree", origin: "Latin" },
+      { name: "Elijah", meaning: "My God is Yahweh", origin: "Hebrew" },
+      { name: "James", meaning: "Supplanter", origin: "Hebrew" },
+      { name: "Benjamin", meaning: "Son of the right hand", origin: "Hebrew" },
+      { name: "Henry", meaning: "Estate ruler", origin: "Germanic" },
+      { name: "Sebastian", meaning: "Venerable", origin: "Greek" },
+      { name: "Jackson", meaning: "Son of Jack", origin: "English" },
+      { name: "Samuel", meaning: "God has heard", origin: "Hebrew" },
+      { name: "David", meaning: "Beloved", origin: "Hebrew" },
+      { name: "Joseph", meaning: "God will increase", origin: "Hebrew" },
+      { name: "Carter", meaning: "Cart driver", origin: "English" }
     ]
   },
   girl: {
@@ -85,7 +137,24 @@ const nameDatabase = {
       { name: "Ishika", meaning: "Paintbrush, sacred pen", origin: "Sanskrit" },
       { name: "Saanvi", meaning: "Goddess Lakshmi", origin: "Sanskrit" },
       { name: "Anika", meaning: "Grace, sweet face", origin: "Sanskrit" },
-      { name: "Priya", meaning: "Beloved, dear one", origin: "Sanskrit" }
+      { name: "Priya", meaning: "Beloved, dear one", origin: "Sanskrit" },
+      { name: "Arya", meaning: "Noble", origin: "Sanskrit" },
+      { name: "Sara", meaning: "Pure", origin: "Sanskrit" },
+      { name: "Myra", meaning: "Sweet", origin: "Sanskrit" },
+      { name: "Kiara", meaning: "Dark-haired", origin: "Sanskrit" },
+      { name: "Shanaya", meaning: "First ray of sun", origin: "Sanskrit" },
+      { name: "Anvi", meaning: "One of Devi's names", origin: "Sanskrit" },
+      { name: "Riya", meaning: "Singer", origin: "Sanskrit" },
+      { name: "Pari", meaning: "Fairy", origin: "Sanskrit" },
+      { name: "Avni", meaning: "Earth", origin: "Sanskrit" },
+      { name: "Siya", meaning: "Sita", origin: "Sanskrit" },
+      { name: "Nisha", meaning: "Night", origin: "Sanskrit" },
+      { name: "Rhea", meaning: "Singer", origin: "Sanskrit" },
+      { name: "Mira", meaning: "Ocean", origin: "Sanskrit" },
+      { name: "Tara", meaning: "Star", origin: "Sanskrit" },
+      { name: "Pooja", meaning: "Prayer", origin: "Sanskrit" },
+      { name: "Shreya", meaning: "Auspicious", origin: "Sanskrit" },
+      { name: "Neha", meaning: "Love", origin: "Sanskrit" }
     ],
     "Tamil Names": [
       { name: "Meera", meaning: "Devotee of Krishna", origin: "Tamil" },
@@ -95,7 +164,24 @@ const nameDatabase = {
       { name: "Lakshmi", meaning: "Goddess of wealth", origin: "Tamil" },
       { name: "Kavitha", meaning: "Poetry", origin: "Tamil" },
       { name: "Deepika", meaning: "Little light", origin: "Tamil" },
-      { name: "Sangeetha", meaning: "Music", origin: "Tamil" }
+      { name: "Sangeetha", meaning: "Music", origin: "Tamil" },
+      { name: "Mythili", meaning: "Sita", origin: "Tamil" },
+      { name: "Kamala", meaning: "Lotus", origin: "Tamil" },
+      { name: "Valli", meaning: "Creeper", origin: "Tamil" },
+      { name: "Selvi", meaning: "Prosperous", origin: "Tamil" },
+      { name: "Thulasi", meaning: "Holy basil", origin: "Tamil" },
+      { name: "Malliga", meaning: "Jasmine", origin: "Tamil" },
+      { name: "Thamizh", meaning: "Tamil", origin: "Tamil" },
+      { name: "Oviya", meaning: "Artist", origin: "Tamil" },
+      { name: "Bharathi", meaning: "Goddess Saraswati", origin: "Tamil" },
+      { name: "Nila", meaning: "Blue", origin: "Tamil" },
+      { name: "Vennila", meaning: "Moon", origin: "Tamil" },
+      { name: "Aananda", meaning: "Joy", origin: "Tamil" },
+      { name: "Poongodi", meaning: "Flower creeper", origin: "Tamil" },
+      { name: "Chellammal", meaning: "Precious", origin: "Tamil" },
+      { name: "Thenmozhi", meaning: "Sweet language", origin: "Tamil" },
+      { name: "Kalyani", meaning: "Auspicious", origin: "Tamil" },
+      { name: "Suganya", meaning: "Good natured", origin: "Tamil" }
     ],
     "Modern/International Names": [
       { name: "Aria", meaning: "Air, melody", origin: "Italian" },
@@ -105,7 +191,24 @@ const nameDatabase = {
       { name: "Luna", meaning: "Moon", origin: "Latin" },
       { name: "Nova", meaning: "New star", origin: "Latin" },
       { name: "Ivy", meaning: "Faithfulness", origin: "English" },
-      { name: "Eva", meaning: "Life, living one", origin: "Hebrew" }
+      { name: "Eva", meaning: "Life, living one", origin: "Hebrew" },
+      { name: "Emma", meaning: "Universal", origin: "Germanic" },
+      { name: "Olivia", meaning: "Olive tree", origin: "Latin" },
+      { name: "Ava", meaning: "Life", origin: "Latin" },
+      { name: "Isabella", meaning: "God is my oath", origin: "Hebrew" },
+      { name: "Sophia", meaning: "Wisdom", origin: "Greek" },
+      { name: "Charlotte", meaning: "Free man", origin: "French" },
+      { name: "Mia", meaning: "Mine", origin: "Italian" },
+      { name: "Amelia", meaning: "Work", origin: "Germanic" },
+      { name: "Harper", meaning: "Harp player", origin: "English" },
+      { name: "Evelyn", meaning: "Wished for child", origin: "English" },
+      { name: "Abigail", meaning: "Father's joy", origin: "Hebrew" },
+      { name: "Emily", meaning: "Rival", origin: "Latin" },
+      { name: "Elizabeth", meaning: "God is my oath", origin: "Hebrew" },
+      { name: "Sofia", meaning: "Wisdom", origin: "Greek" },
+      { name: "Avery", meaning: "Ruler of elves", origin: "English" },
+      { name: "Ella", meaning: "All, completely", origin: "Germanic" },
+      { name: "Madison", meaning: "Son of Matthew", origin: "English" }
     ]
   }
 };
@@ -166,10 +269,24 @@ export const calculateAstrology = async (birthData: BirthData): Promise<Astrolog
     }
   }
   
-  // Select and score names
+  // Filter by preference theme if specified
+  if (birthData.preference) {
+    const preferenceKeywords = birthData.preference.toLowerCase().split(' ');
+    const filtered = availableNames.filter(name => 
+      preferenceKeywords.some(keyword => 
+        name.meaning.toLowerCase().includes(keyword) || 
+        name.name.toLowerCase().includes(keyword)
+      )
+    );
+    if (filtered.length > 0) {
+      availableNames = filtered;
+    }
+  }
+  
+  // Select and score names (up to 50)
   const selectedNames = availableNames
     .sort(() => Math.random() - 0.5)
-    .slice(0, 6)
+    .slice(0, Math.min(50, availableNames.length))
     .map(name => ({
       ...name,
       score: Math.floor(Math.random() * 3) + 8 // Score between 8-10

@@ -1,8 +1,10 @@
 
 import React from 'react';
 import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Star, Crown, Sparkles, Heart, Eye } from 'lucide-react';
+import { Star, Crown, Sparkles, Heart, Eye, Download, Mail, Share2 } from 'lucide-react';
+import { generatePDF, shareViaGmail } from '@/utils/pdfGenerator';
 
 interface AstrologyResult {
   birthSign: string;
@@ -23,8 +25,49 @@ interface AstrologyResultsProps {
 }
 
 const AstrologyResults = ({ result }: AstrologyResultsProps) => {
+  const handleDownloadPDF = () => {
+    generatePDF(result);
+  };
+
+  const handleShareGmail = () => {
+    shareViaGmail(result);
+  };
+
   return (
-    <div className="space-y-8 max-w-4xl mx-auto">
+    <div className="space-y-8 max-w-6xl mx-auto">
+      {/* Action Buttons */}
+      <Card className="glass-card p-6">
+        <div className="flex flex-wrap gap-4 justify-center">
+          <Button
+            onClick={handleDownloadPDF}
+            className="nebula-gradient text-white px-6 py-2 hover:opacity-90 transition-all duration-300"
+          >
+            <Download className="w-4 h-4 mr-2" />
+            Download PDF Report
+          </Button>
+          <Button
+            onClick={handleShareGmail}
+            variant="outline"
+            className="border-primary/40 text-primary hover:bg-primary/20 px-6 py-2"
+          >
+            <Mail className="w-4 h-4 mr-2" />
+            Share via Gmail
+          </Button>
+          <Button
+            onClick={() => navigator.share && navigator.share({
+              title: 'My StarName Oracle Report',
+              text: `Check out my cosmic name suggestions! Birth Sign: ${result.birthSign}`,
+              url: window.location.href
+            })}
+            variant="outline"
+            className="border-accent/40 text-accent hover:bg-accent/20 px-6 py-2"
+          >
+            <Share2 className="w-4 h-4 mr-2" />
+            Share Report
+          </Button>
+        </div>
+      </Card>
+
       {/* Birth Sign & Overview */}
       <Card className="glass-card p-8 text-center animate-glow">
         <div className="flex items-center justify-center gap-3 mb-6">
@@ -63,27 +106,33 @@ const AstrologyResults = ({ result }: AstrologyResultsProps) => {
           <Crown className="w-8 h-8 text-primary" />
         </div>
         
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="mb-6 text-center">
+          <Badge className="nebula-gradient text-white px-4 py-2 text-lg">
+            {result.suggestedNames.length} Personalized Names
+          </Badge>
+        </div>
+        
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {result.suggestedNames.map((nameData, index) => (
             <Card key={index} className="p-6 border border-primary/20 hover:border-primary/40 transition-all duration-300 hover:shadow-lg hover:shadow-primary/20">
               <div className="flex items-start justify-between mb-4">
                 <div>
-                  <h4 className="text-2xl font-bold text-primary mb-1">{nameData.name}</h4>
+                  <h4 className="text-xl font-bold text-primary mb-1">{nameData.name}</h4>
                   <p className="text-sm text-accent font-medium">{nameData.origin}</p>
                 </div>
                 <div className="flex items-center gap-1 bg-primary/20 px-3 py-1 rounded-full">
                   <Star className="w-4 h-4 text-primary" />
-                  <span className="text-primary font-semibold">{nameData.score}/10</span>
+                  <span className="text-primary font-semibold text-sm">{nameData.score}/10</span>
                 </div>
               </div>
-              <p className="text-muted-foreground leading-relaxed">{nameData.meaning}</p>
+              <p className="text-muted-foreground leading-relaxed text-sm mb-4">{nameData.meaning}</p>
               
               {/* Star rating visual */}
-              <div className="flex gap-1 mt-4">
+              <div className="flex gap-1">
                 {[...Array(10)].map((_, i) => (
                   <Star 
                     key={i} 
-                    className={`w-4 h-4 ${i < nameData.score ? 'text-primary fill-current' : 'text-muted-foreground/30'}`}
+                    className={`w-3 h-3 ${i < nameData.score ? 'text-primary fill-current' : 'text-muted-foreground/30'}`}
                   />
                 ))}
               </div>
