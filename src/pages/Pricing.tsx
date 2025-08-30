@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -11,9 +11,17 @@ import { toast } from 'sonner';
 import StarField from '@/components/StarField';
 import ChatBot from '@/components/ChatBot';
 
+// Razorpay types
+declare global {
+  interface Window {
+    Razorpay: any;
+  }
+}
+
 const Pricing = () => {
   const { profile, refreshProfile } = useAuth();
   const [loading, setLoading] = useState<string | null>(null);
+  const [razorpayLoaded, setRazorpayLoaded] = useState(false);
 
   const packages = [
     {
@@ -22,15 +30,15 @@ const Pricing = () => {
       credits: 10,
       price: 499,
       popular: false,
-      features: ['10 Name Consultations', 'Basic Birth Chart Analysis', 'Email Support']
+      features: ['10 Name Consultations', 'Basic Vedic Analysis', 'Email Support']
     },
     {
       id: 'popular',
-      name: 'Popular Package',
+      name: 'Popular Package',  
       credits: 25,
       price: 999,
       popular: true,
-      features: ['25 Name Consultations', 'Detailed Birth Chart Analysis', 'Priority Email Support', 'PDF Reports']
+      features: ['25 Name Consultations', 'Detailed Vedic Analysis', 'Priority Email Support', 'PDF Reports']
     },
     {
       id: 'premium',
@@ -42,16 +50,39 @@ const Pricing = () => {
     }
   ];
 
+  useEffect(() => {
+    // Load Razorpay script
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.onload = () => setRazorpayLoaded(true);
+    script.onerror = () => {
+      console.error('Failed to load Razorpay script');
+      toast.error('Payment system unavailable. Please try again later.');
+    };
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
   const handlePurchase = async (packageData: typeof packages[0]) => {
     if (!profile) {
       toast.error('Please sign in to purchase credits.');
       return;
     }
 
+    if (!razorpayLoaded) {
+      toast.error('Payment system is loading. Please try again.');
+      return;
+    }
+
     setLoading(packageData.id);
 
     try {
-      // Call Razorpay payment function
+      console.log('Creating Razorpay order...', packageData);
+      
+      // Call edge function to create Razorpay order
       const { data, error } = await supabase.functions.invoke('razorpay-payment', {
         body: {
           amount: packageData.price,
@@ -61,15 +92,72 @@ const Pricing = () => {
       });
 
       if (error) {
+        console.error('Supabase function error:', error);
         throw error;
       }
 
-      if (data?.url) {
-        // Open Razorpay payment in a new tab
-        window.open(data.url, '_blank');
-      } else {
-        toast.error('Failed to initiate payment. Please try again.');
+      if (!data?.order) {
+        throw new Error('Invalid response from payment service');
       }
+
+      console.log('Razorpay order data received:', data);
+
+      // Configure Razorpay options
+      const options = {
+        key: data.order.key,
+        amount: data.order.amount,
+        currency: data.order.currency,
+        name: 'AstroName AI',
+        description: `${data.package.name} - ${data.package.credits} Credits`,
+        order_id: data.order.id,
+        prefill: {
+          name: data.user.name,
+          email: data.user.email,
+          contact: data.user.contact
+        },
+        theme: {
+          color: '#9333ea'
+        },
+        handler: async function (response: any) {
+          console.log('Payment successful:', response);
+          
+          try {
+            // Verify payment on backend
+            const { data: verifyData, error: verifyError } = await supabase.functions.invoke('verify-payment', {
+              body: {
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_signature: response.razorpay_signature
+              }
+            });
+
+            if (verifyError) {
+              throw verifyError;
+            }
+
+            console.log('Payment verified successfully:', verifyData);
+            
+            // Refresh user profile to update credits
+            await refreshProfile();
+            
+            toast.success(`Payment successful! ${verifyData.credits_added} credits added to your account.`);
+          } catch (error) {
+            console.error('Payment verification error:', error);
+            toast.error('Payment completed but verification failed. Please contact support.');
+          }
+        },
+        modal: {
+          ondismiss: function() {
+            console.log('Payment modal dismissed');
+            toast.info('Payment cancelled');
+          }
+        }
+      };
+
+      // Open Razorpay modal
+      const razorpay = new window.Razorpay(options);
+      razorpay.open();
+
     } catch (error) {
       console.error('Payment error:', error);
       toast.error('Payment failed. Please try again.');
@@ -114,7 +202,7 @@ const Pricing = () => {
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold text-cosmic mb-4">Choose Your Package</h2>
             <p className="text-muted-foreground text-lg">
-              Unlock the cosmic secrets with our AI-powered astrological consultations
+              Unlock Vedic wisdom with our AI-powered astrological consultations
             </p>
           </div>
 
@@ -145,11 +233,13 @@ const Pricing = () => {
 
                 <Button
                   onClick={() => handlePurchase(pkg)}
-                  disabled={loading === pkg.id}
+                  disabled={loading === pkg.id || !razorpayLoaded}
                   className={`w-full py-3 ${pkg.popular ? 'nebula-gradient' : 'bg-primary hover:bg-primary/90'} text-white font-semibold`}
                 >
                   {loading === pkg.id ? (
                     'Processing...'
+                  ) : !razorpayLoaded ? (
+                    'Loading...'
                   ) : (
                     <>
                       <CreditCard className="w-5 h-5 mr-2" />
@@ -167,13 +257,13 @@ const Pricing = () => {
             <div className="grid md:grid-cols-3 gap-6">
               <div>
                 <Star className="w-12 h-12 text-primary mx-auto mb-4" />
-                <h4 className="text-lg font-semibold mb-2 text-foreground">AI-Powered Analysis</h4>
-                <p className="text-muted-foreground text-sm">Advanced algorithms analyze birth charts for personalized suggestions</p>
+                <h4 className="text-lg font-semibold mb-2 text-foreground">Vedic AI Analysis</h4>
+                <p className="text-muted-foreground text-sm">Advanced algorithms analyze Vedic birth charts for authentic suggestions</p>
               </div>
               <div>
                 <Crown className="w-12 h-12 text-accent mx-auto mb-4" />
                 <h4 className="text-lg font-semibold mb-2 text-foreground">Expert Astrologers</h4>
-                <p className="text-muted-foreground text-sm">Consultations reviewed by certified astrological experts</p>
+                <p className="text-muted-foreground text-sm">Consultations based on traditional Vedic astrological principles</p>
               </div>
               <div>
                 <CreditCard className="w-12 h-12 text-primary mx-auto mb-4" />

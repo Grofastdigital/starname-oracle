@@ -1,3 +1,4 @@
+
 export interface BirthData {
   birthDate: string;
   birthTime: string;
@@ -11,6 +12,7 @@ export interface BirthData {
 
 export interface AstrologyResult {
   birthSign: string;
+  nakshatra: string;
   luckyNumbers: number[];
   luckyColors: string[];
   suggestedNames: Array<{
@@ -23,246 +25,225 @@ export interface AstrologyResult {
   recommendations: string[];
 }
 
-// Zodiac signs based on birth date
-const getZodiacSign = (date: Date): string => {
+// Indian Vedic Rashi (Zodiac Signs) with Sanskrit names
+const getVedicRashi = (date: Date): string => {
   const month = date.getMonth() + 1;
   const day = date.getDate();
   
-  if ((month === 3 && day >= 21) || (month === 4 && day <= 19)) return 'Aries ♈';
-  if ((month === 4 && day >= 20) || (month === 5 && day <= 20)) return 'Taurus ♉';
-  if ((month === 5 && day >= 21) || (month === 6 && day <= 20)) return 'Gemini ♊';
-  if ((month === 6 && day >= 21) || (month === 7 && day <= 22)) return 'Cancer ♋';
-  if ((month === 7 && day >= 23) || (month === 8 && day <= 22)) return 'Leo ♌';
-  if ((month === 8 && day >= 23) || (month === 9 && day <= 22)) return 'Virgo ♍';
-  if ((month === 9 && day >= 23) || (month === 10 && day <= 22)) return 'Libra ♎';
-  if ((month === 10 && day >= 23) || (month === 11 && day <= 21)) return 'Scorpio ♏';
-  if ((month === 11 && day >= 22) || (month === 12 && day <= 21)) return 'Sagittarius ♐';
-  if ((month === 12 && day >= 22) || (month === 1 && day <= 19)) return 'Capricorn ♑';
-  if ((month === 1 && day >= 20) || (month === 2 && day <= 18)) return 'Aquarius ♒';
-  return 'Pisces ♓';
+  if ((month === 3 && day >= 21) || (month === 4 && day <= 19)) return 'मेष राशि (Mesha - Aries)';
+  if ((month === 4 && day >= 20) || (month === 5 && day <= 20)) return 'वृषभ राशि (Vrishabha - Taurus)';
+  if ((month === 5 && day >= 21) || (month === 6 && day <= 20)) return 'मिथुन राशि (Mithuna - Gemini)';
+  if ((month === 6 && day >= 21) || (month === 7 && day <= 22)) return 'कर्क राशि (Karka - Cancer)';
+  if ((month === 7 && day >= 23) || (month === 8 && day <= 22)) return 'सिंह राशि (Simha - Leo)';
+  if ((month === 8 && day >= 23) || (month === 9 && day <= 22)) return 'कन्या राशि (Kanya - Virgo)';
+  if ((month === 9 && day >= 23) || (month === 10 && day <= 22)) return 'तुला राशि (Tula - Libra)';
+  if ((month === 10 && day >= 23) || (month === 11 && day <= 21)) return 'वृश्चिक राशि (Vrishchika - Scorpio)';
+  if ((month === 11 && day >= 22) || (month === 12 && day <= 21)) return 'धनु राशि (Dhanu - Sagittarius)';
+  if ((month === 12 && day >= 22) || (month === 1 && day <= 19)) return 'मकर राशि (Makara - Capricorn)';
+  if ((month === 1 && day >= 20) || (month === 2 && day <= 18)) return 'कुम्भ राशि (Kumbha - Aquarius)';
+  return 'मीन राशि (Meena - Pisces)';
 };
 
-// Expanded name database with 50+ names per category
-const nameDatabase = {
+// Calculate Nakshatra based on birth date (simplified calculation)
+const getNakshatra = (date: Date): string => {
+  const nakshatras = [
+    'अश्विनी (Ashwini)', 'भरणी (Bharani)', 'कृत्तिका (Krittika)', 'रोहिणी (Rohini)',
+    'मृगशिरा (Mrigashira)', 'आर्द्रा (Ardra)', 'पुनर्वसु (Punarvasu)', 'पुष्य (Pushya)',
+    'आश्लेषा (Ashlesha)', 'मघा (Magha)', 'पूर्वाफाल्गुनी (Purva Phalguni)', 'उत्तराफाल्गुनी (Uttara Phalguni)',
+    'हस्त (Hasta)', 'चित्रा (Chitra)', 'स्वाती (Swati)', 'विशाखा (Vishakha)',
+    'अनुराधा (Anuradha)', 'ज्येष्ठा (Jyeshtha)', 'मूल (Mula)', 'पूर्वाषाढ़ा (Purva Ashadha)',
+    'उत्तराषाढ़ा (Uttara Ashadha)', 'श्रवण (Shravana)', 'धनिष्ठा (Dhanishta)', 'शतभिषा (Shatabhisha)',
+    'पूर्वाभाद्रपद (Purva Bhadrapada)', 'उत्तराभाद्रपद (Uttara Bhadrapada)', 'रेवती (Revati)'
+  ];
+  
+  // Simplified calculation: use day of year to determine nakshatra
+  const dayOfYear = Math.floor((date.getTime() - new Date(date.getFullYear(), 0, 0).getTime()) / 86400000);
+  const nakshatraIndex = Math.floor((dayOfYear * 27) / 365) % 27;
+  return nakshatras[nakshatraIndex];
+};
+
+// Expanded Indian name database organized by Rashi and gender
+const vedicNameDatabase = {
   boy: {
-    "Hindu/Sanskrit Names": [
-      { name: "Aarav", meaning: "Peaceful, melodious", origin: "Sanskrit" },
-      { name: "Arjun", meaning: "Bright, shining warrior", origin: "Sanskrit" },
-      { name: "Vihaan", meaning: "Dawn, beginning", origin: "Sanskrit" },
-      { name: "Aditya", meaning: "Sun god", origin: "Sanskrit" },
-      { name: "Ishaan", meaning: "Lord Shiva, northeast direction", origin: "Sanskrit" },
-      { name: "Reyansh", meaning: "Ray of light", origin: "Sanskrit" },
-      { name: "Krishna", meaning: "Dark, attractive", origin: "Sanskrit" },
-      { name: "Dhruv", meaning: "Pole star, constant", origin: "Sanskrit" },
-      { name: "Arnav", meaning: "Ocean", origin: "Sanskrit" },
-      { name: "Vivaan", meaning: "Full of life", origin: "Sanskrit" },
-      { name: "Ayaan", meaning: "Gift of God", origin: "Sanskrit" },
-      { name: "Rudra", meaning: "Lord Shiva", origin: "Sanskrit" },
-      { name: "Shivansh", meaning: "Part of Lord Shiva", origin: "Sanskrit" },
-      { name: "Atharv", meaning: "Knowledge", origin: "Sanskrit" },
-      { name: "Kabir", meaning: "Great, powerful", origin: "Sanskrit" },
-      { name: "Aryan", meaning: "Noble", origin: "Sanskrit" },
-      { name: "Yuvraj", meaning: "Crown prince", origin: "Sanskrit" },
-      { name: "Advait", meaning: "Unique", origin: "Sanskrit" },
-      { name: "Kiaan", meaning: "Ancient", origin: "Sanskrit" },
-      { name: "Harsh", meaning: "Joy, delight", origin: "Sanskrit" },
-      { name: "Daksh", meaning: "Capable", origin: "Sanskrit" },
-      { name: "Parth", meaning: "Arjun", origin: "Sanskrit" },
-      { name: "Tanish", meaning: "Ambition", origin: "Sanskrit" },
-      { name: "Veer", meaning: "Brave", origin: "Sanskrit" },
-      { name: "Shaurya", meaning: "Bravery", origin: "Sanskrit" }
+    "Sanskrit/Hindu Names": [
+      { name: "आर्यन (Aryan)", meaning: "Noble soul, warrior", origin: "Sanskrit" },
+      { name: "आदित्य (Aditya)", meaning: "Son of Aditi, Sun god", origin: "Sanskrit" },
+      { name: "अभिनव (Abhinav)", meaning: "New, fresh, modern", origin: "Sanskrit" },
+      { name: "अभिमन्यु (Abhimanyu)", meaning: "Proud, passionate", origin: "Sanskrit" },
+      { name: "अक्षय (Akshay)", meaning: "Eternal, indestructible", origin: "Sanskrit" },
+      { name: "अमित (Amit)", meaning: "Boundless, infinite", origin: "Sanskrit" },
+      { name: "अनिल (Anil)", meaning: "Wind god", origin: "Sanskrit" },
+      { name: "अनुज (Anuj)", meaning: "Younger brother", origin: "Sanskrit" },
+      { name: "अर्जुन (Arjun)", meaning: "Bright, shining warrior", origin: "Sanskrit" },
+      { name: "अशोक (Ashok)", meaning: "Without sorrow", origin: "Sanskrit" },
+      { name: "देव (Dev)", meaning: "Divine, godly", origin: "Sanskrit" },
+      { name: "धर्मेश (Dharmesh)", meaning: "Lord of righteousness", origin: "Sanskrit" },
+      { name: "गौरव (Gaurav)", meaning: "Honor, pride", origin: "Sanskrit" },
+      { name: "हर्षित (Harshit)", meaning: "Happy, joyful", origin: "Sanskrit" },
+      { name: "ईशान (Ishan)", meaning: "Lord Shiva, northeast", origin: "Sanskrit" },
+      { name: "जय (Jay)", meaning: "Victory", origin: "Sanskrit" },
+      { name: "कृष्ण (Krishna)", meaning: "Dark, attractive one", origin: "Sanskrit" },
+      { name: "मनीष (Manish)", meaning: "God of mind, intelligent", origin: "Sanskrit" },
+      { name: "नवीन (Naveen)", meaning: "New, fresh", origin: "Sanskrit" },
+      { name: "प्रकाश (Prakash)", meaning: "Light, illumination", origin: "Sanskrit" },
+      { name: "राहुल (Rahul)", meaning: "Capable, efficient", origin: "Sanskrit" },
+      { name: "संजय (Sanjay)", meaning: "Completely victorious", origin: "Sanskrit" },
+      { name: "तुषार (Tushar)", meaning: "Snow, winter", origin: "Sanskrit" },
+      { name: "उमेश (Umesh)", meaning: "Lord Shiva", origin: "Sanskrit" },
+      { name: "विकास (Vikas)", meaning: "Development, progress", origin: "Sanskrit" },
+      { name: "यश (Yash)", meaning: "Fame, success", origin: "Sanskrit" }
     ],
-    "Tamil Names": [
-      { name: "Arjun", meaning: "Bright warrior", origin: "Tamil" },
-      { name: "Karthik", meaning: "Son of Lord Shiva", origin: "Tamil" },
-      { name: "Surya", meaning: "Sun god", origin: "Tamil" },
-      { name: "Vikram", meaning: "Valor, bravery", origin: "Tamil" },
-      { name: "Rajesh", meaning: "King of kings", origin: "Tamil" },
-      { name: "Dinesh", meaning: "Lord of the day", origin: "Tamil" },
-      { name: "Ganesh", meaning: "Lord of obstacles", origin: "Tamil" },
-      { name: "Ramesh", meaning: "Lord of Rama", origin: "Tamil" },
-      { name: "Arun", meaning: "Dawn", origin: "Tamil" },
-      { name: "Muthu", meaning: "Pearl", origin: "Tamil" },
-      { name: "Senthil", meaning: "Lord Murugan", origin: "Tamil" },
-      { name: "Bala", meaning: "Young", origin: "Tamil" },
-      { name: "Ravi", meaning: "Sun", origin: "Tamil" },
-      { name: "Kannan", meaning: "Lord Krishna", origin: "Tamil" },
-      { name: "Vel", meaning: "Spear", origin: "Tamil" },
-      { name: "Murugan", meaning: "Lord Kartikeya", origin: "Tamil" },
-      { name: "Thiruman", meaning: "Sacred mark", origin: "Tamil" },
-      { name: "Selvam", meaning: "Wealth", origin: "Tamil" },
-      { name: "Senthil", meaning: "Red lotus", origin: "Tamil" },
-      { name: "Thirumal", meaning: "Lord Vishnu", origin: "Tamil" },
-      { name: "Cheran", meaning: "Chera king", origin: "Tamil" },
-      { name: "Pandian", meaning: "Pandya king", origin: "Tamil" },
-      { name: "Cholan", meaning: "Chola king", origin: "Tamil" },
-      { name: "Vetri", meaning: "Victory", origin: "Tamil" },
-      { name: "Bharath", meaning: "India", origin: "Tamil" }
+    "Tamil/South Indian Names": [
+      { name: "अरुण (Arun)", meaning: "Dawn, reddish brown", origin: "Tamil" },
+      { name: "कार्तिक (Karthik)", meaning: "Son of Lord Shiva", origin: "Tamil" },
+      { name: "मुरुगन (Murugan)", meaning: "Lord Kartikeya", origin: "Tamil" },
+      { name: "राजेश (Rajesh)", meaning: "King of kings", origin: "Tamil" },
+      { name: "सूर्य (Surya)", meaning: "Sun god", origin: "Tamil" },
+      { name: "विक्रम (Vikram)", meaning: "Valor, bravery", origin: "Tamil" },
+      { name: "गणेश (Ganesh)", meaning: "Lord of obstacles", origin: "Tamil" },
+      { name: "रमेश (Ramesh)", meaning: "Lord Rama", origin: "Tamil" },
+      { name: "दिनेश (Dinesh)", meaning: "Lord of the day", origin: "Tamil" },
+      { name: "संगीत (Sangeet)", meaning: "Music", origin: "Tamil" },
+      { name: "सेंथिल (Senthil)", meaning: "Lord Murugan", origin: "Tamil" },
+      { name: "बाला (Bala)", meaning: "Young, child", origin: "Tamil" },
+      { name: "रवि (Ravi)", meaning: "Sun", origin: "Tamil" },
+      { name: "कन्नन (Kannan)", meaning: "Lord Krishna", origin: "Tamil" },
+      { name: "मुत्तु (Muthu)", meaning: "Pearl", origin: "Tamil" }
     ],
-    "Modern/International Names": [
-      { name: "Aryan", meaning: "Noble warrior", origin: "Modern" },
-      { name: "Ryan", meaning: "Little king", origin: "Irish" },
-      { name: "Neil", meaning: "Champion", origin: "Irish" },
-      { name: "Dev", meaning: "Divine", origin: "Modern" },
-      { name: "Kai", meaning: "Ocean", origin: "Hawaiian" },
-      { name: "Zain", meaning: "Beauty, grace", origin: "Arabic" },
-      { name: "Leo", meaning: "Lion", origin: "Latin" },
-      { name: "Max", meaning: "Greatest", origin: "Latin" },
-      { name: "Alex", meaning: "Defender", origin: "Greek" },
-      { name: "Noah", meaning: "Rest, comfort", origin: "Hebrew" },
-      { name: "Liam", meaning: "Strong-willed warrior", origin: "Irish" },
-      { name: "Ethan", meaning: "Strong, firm", origin: "Hebrew" },
-      { name: "Mason", meaning: "Stone worker", origin: "English" },
-      { name: "Lucas", meaning: "Light", origin: "Latin" },
-      { name: "Oliver", meaning: "Olive tree", origin: "Latin" },
-      { name: "Elijah", meaning: "My God is Yahweh", origin: "Hebrew" },
-      { name: "James", meaning: "Supplanter", origin: "Hebrew" },
-      { name: "Benjamin", meaning: "Son of the right hand", origin: "Hebrew" },
-      { name: "Henry", meaning: "Estate ruler", origin: "Germanic" },
-      { name: "Sebastian", meaning: "Venerable", origin: "Greek" },
-      { name: "Jackson", meaning: "Son of Jack", origin: "English" },
-      { name: "Samuel", meaning: "God has heard", origin: "Hebrew" },
-      { name: "David", meaning: "Beloved", origin: "Hebrew" },
-      { name: "Joseph", meaning: "God will increase", origin: "Hebrew" },
-      { name: "Carter", meaning: "Cart driver", origin: "English" }
+    "Regional/Cultural Names": [
+      { name: "आकाश (Akash)", meaning: "Sky, space", origin: "Hindi" },
+      { name: "भावेश (Bhavesh)", meaning: "Lord of emotions", origin: "Gujarati" },
+      { name: "चिराग (Chirag)", meaning: "Lamp, light", origin: "Gujarati" },
+      { name: "दर्शन (Darshan)", meaning: "Vision, sight", origin: "Marathi" },
+      { name: "एकनाथ (Eknath)", meaning: "Devoted to one God", origin: "Marathi" },
+      { name: "फाल्गुन (Falgun)", meaning: "Born in Falgun month", origin: "Bengali" },
+      { name: "गिरीश (Girish)", meaning: "Lord of mountains", origin: "Kannada" },
+      { name: "हिमांशु (Himanshu)", meaning: "Moon", origin: "Punjabi" },
+      { name: "इन्द्र (Indra)", meaning: "King of gods", origin: "Sanskrit" },
+      { name: "जगदीश (Jagdish)", meaning: "Lord of the world", origin: "Rajasthani" }
     ]
   },
   girl: {
-    "Hindu/Sanskrit Names": [
-      { name: "Aadhya", meaning: "First power, beginning", origin: "Sanskrit" },
-      { name: "Ananya", meaning: "Unique, matchless", origin: "Sanskrit" },
-      { name: "Kavya", meaning: "Poetry, literature", origin: "Sanskrit" },
-      { name: "Diya", meaning: "Lamp, light", origin: "Sanskrit" },
-      { name: "Ishika", meaning: "Paintbrush, sacred pen", origin: "Sanskrit" },
-      { name: "Saanvi", meaning: "Goddess Lakshmi", origin: "Sanskrit" },
-      { name: "Anika", meaning: "Grace, sweet face", origin: "Sanskrit" },
-      { name: "Priya", meaning: "Beloved, dear one", origin: "Sanskrit" },
-      { name: "Arya", meaning: "Noble", origin: "Sanskrit" },
-      { name: "Sara", meaning: "Pure", origin: "Sanskrit" },
-      { name: "Myra", meaning: "Sweet", origin: "Sanskrit" },
-      { name: "Kiara", meaning: "Dark-haired", origin: "Sanskrit" },
-      { name: "Shanaya", meaning: "First ray of sun", origin: "Sanskrit" },
-      { name: "Anvi", meaning: "One of Devi's names", origin: "Sanskrit" },
-      { name: "Riya", meaning: "Singer", origin: "Sanskrit" },
-      { name: "Pari", meaning: "Fairy", origin: "Sanskrit" },
-      { name: "Avni", meaning: "Earth", origin: "Sanskrit" },
-      { name: "Siya", meaning: "Sita", origin: "Sanskrit" },
-      { name: "Nisha", meaning: "Night", origin: "Sanskrit" },
-      { name: "Rhea", meaning: "Singer", origin: "Sanskrit" },
-      { name: "Mira", meaning: "Ocean", origin: "Sanskrit" },
-      { name: "Tara", meaning: "Star", origin: "Sanskrit" },
-      { name: "Pooja", meaning: "Prayer", origin: "Sanskrit" },
-      { name: "Shreya", meaning: "Auspicious", origin: "Sanskrit" },
-      { name: "Neha", meaning: "Love", origin: "Sanskrit" }
+    "Sanskrit/Hindu Names": [
+      { name: "आरती (Aarti)", meaning: "Divine light worship", origin: "Sanskrit" },
+      { name: "अनन्या (Ananya)", meaning: "Unique, matchless", origin: "Sanskrit" },
+      { name: "अवनि (Avani)", meaning: "Earth", origin: "Sanskrit" },
+      { name: "भावना (Bhavana)", meaning: "Feeling, emotion", origin: "Sanskrit" },
+      { name: "चेतना (Chetana)", meaning: "Consciousness, awareness", origin: "Sanskrit" },
+      { name: "दीया (Diya)", meaning: "Lamp, light", origin: "Sanskrit" },
+      { name: "एशा (Esha)", meaning: "Desire, goddess Parvati", origin: "Sanskrit" },
+      { name: "गायत्री (Gayatri)", meaning: "Sacred Vedic hymn", origin: "Sanskrit" },
+      { name: "हर्षिता (Harshita)", meaning: "Happy, joyful", origin: "Sanskrit" },
+      { name: "इशिका (Ishika)", meaning: "Sacred pen, brush", origin: "Sanskrit" },
+      { name: "जानकी (Janaki)", meaning: "Daughter of Janaka, Sita", origin: "Sanskrit" },
+      { name: "कविता (Kavita)", meaning: "Poetry, poem", origin: "Sanskrit" },
+      { name: "लक्ष्मी (Lakshmi)", meaning: "Goddess of wealth", origin: "Sanskrit" },
+      { name: "माधुरी (Madhuri)", meaning: "Sweetness", origin: "Sanskrit" },
+      { name: "नैना (Naina)", meaning: "Eyes", origin: "Sanskrit" },
+      { name: "ओजस्विनी (Ojaswini)", meaning: "Bright, lustrous", origin: "Sanskrit" },
+      { name: "प्रिया (Priya)", meaning: "Beloved, dear one", origin: "Sanskrit" },
+      { name: "रिया (Riya)", meaning: "Singer, graceful", origin: "Sanskrit" },
+      { name: "सरस्वती (Saraswati)", meaning: "Goddess of knowledge", origin: "Sanskrit" },
+      { name: "तारा (Tara)", meaning: "Star", origin: "Sanskrit" },
+      { name: "उर्वशी (Urvashi)", meaning: "Most beautiful apsara", origin: "Sanskrit" },
+      { name: "वैदेही (Vaidehi)", meaning: "Princess of Videha, Sita", origin: "Sanskrit" },
+      { name: "यशोदा (Yashoda)", meaning: "Giver of fame", origin: "Sanskrit" },
+      { name: "जया (Jaya)", meaning: "Victory", origin: "Sanskrit" },
+      { name: "कीर्ति (Kirti)", meaning: "Fame, glory", origin: "Sanskrit" }
     ],
-    "Tamil Names": [
-      { name: "Meera", meaning: "Devotee of Krishna", origin: "Tamil" },
-      { name: "Priya", meaning: "Beloved", origin: "Tamil" },
-      { name: "Keerthana", meaning: "Song, hymn", origin: "Tamil" },
-      { name: "Divya", meaning: "Divine, heavenly", origin: "Tamil" },
-      { name: "Lakshmi", meaning: "Goddess of wealth", origin: "Tamil" },
-      { name: "Kavitha", meaning: "Poetry", origin: "Tamil" },
-      { name: "Deepika", meaning: "Little light", origin: "Tamil" },
-      { name: "Sangeetha", meaning: "Music", origin: "Tamil" },
-      { name: "Mythili", meaning: "Sita", origin: "Tamil" },
-      { name: "Kamala", meaning: "Lotus", origin: "Tamil" },
-      { name: "Valli", meaning: "Creeper", origin: "Tamil" },
-      { name: "Selvi", meaning: "Prosperous", origin: "Tamil" },
-      { name: "Thulasi", meaning: "Holy basil", origin: "Tamil" },
-      { name: "Malliga", meaning: "Jasmine", origin: "Tamil" },
-      { name: "Thamizh", meaning: "Tamil", origin: "Tamil" },
-      { name: "Oviya", meaning: "Artist", origin: "Tamil" },
-      { name: "Bharathi", meaning: "Goddess Saraswati", origin: "Tamil" },
-      { name: "Nila", meaning: "Blue", origin: "Tamil" },
-      { name: "Vennila", meaning: "Moon", origin: "Tamil" },
-      { name: "Aananda", meaning: "Joy", origin: "Tamil" },
-      { name: "Poongodi", meaning: "Flower creeper", origin: "Tamil" },
-      { name: "Chellammal", meaning: "Precious", origin: "Tamil" },
-      { name: "Thenmozhi", meaning: "Sweet language", origin: "Tamil" },
-      { name: "Kalyani", meaning: "Auspicious", origin: "Tamil" },
-      { name: "Suganya", meaning: "Good natured", origin: "Tamil" }
+    "Tamil/South Indian Names": [
+      { name: "मीरा (Meera)", meaning: "Devotee of Krishna", origin: "Tamil" },
+      { name: "कीर्तना (Keertana)", meaning: "Song, hymn", origin: "Tamil" },
+      { name: "दिव्या (Divya)", meaning: "Divine, heavenly", origin: "Tamil" },
+      { name: "कमला (Kamala)", meaning: "Lotus", origin: "Tamil" },
+      { name: "संगीता (Sangeeta)", meaning: "Music", origin: "Tamil" },
+      { name: "देविका (Devika)", meaning: "Little goddess", origin: "Tamil" },
+      { name: "मिथिली (Mithili)", meaning: "Princess of Mithila", origin: "Tamil" },
+      { name: "वल्ली (Valli)", meaning: "Creeper plant", origin: "Tamil" },
+      { name: "सेल्वी (Selvi)", meaning: "Prosperous woman", origin: "Tamil" },
+      { name: "तुलसी (Tulsi)", meaning: "Holy basil", origin: "Tamil" },
+      { name: "मल्लिका (Mallika)", meaning: "Jasmine flower", origin: "Tamil" },
+      { name: "भारती (Bharati)", meaning: "Goddess Saraswati", origin: "Tamil" },
+      { name: "नीला (Nila)", meaning: "Blue", origin: "Tamil" },
+      { name: "वेणिला (Venila)", meaning: "Moonlight", origin: "Tamil" },
+      { name: "सुगन्या (Suganya)", meaning: "Good natured", origin: "Tamil" }
     ],
-    "Modern/International Names": [
-      { name: "Aria", meaning: "Air, melody", origin: "Italian" },
-      { name: "Zara", meaning: "Blooming flower", origin: "Arabic" },
-      { name: "Maya", meaning: "Illusion, magic", origin: "Sanskrit/Modern" },
-      { name: "Kira", meaning: "Light beam", origin: "Persian" },
-      { name: "Luna", meaning: "Moon", origin: "Latin" },
-      { name: "Nova", meaning: "New star", origin: "Latin" },
-      { name: "Ivy", meaning: "Faithfulness", origin: "English" },
-      { name: "Eva", meaning: "Life, living one", origin: "Hebrew" },
-      { name: "Emma", meaning: "Universal", origin: "Germanic" },
-      { name: "Olivia", meaning: "Olive tree", origin: "Latin" },
-      { name: "Ava", meaning: "Life", origin: "Latin" },
-      { name: "Isabella", meaning: "God is my oath", origin: "Hebrew" },
-      { name: "Sophia", meaning: "Wisdom", origin: "Greek" },
-      { name: "Charlotte", meaning: "Free man", origin: "French" },
-      { name: "Mia", meaning: "Mine", origin: "Italian" },
-      { name: "Amelia", meaning: "Work", origin: "Germanic" },
-      { name: "Harper", meaning: "Harp player", origin: "English" },
-      { name: "Evelyn", meaning: "Wished for child", origin: "English" },
-      { name: "Abigail", meaning: "Father's joy", origin: "Hebrew" },
-      { name: "Emily", meaning: "Rival", origin: "Latin" },
-      { name: "Elizabeth", meaning: "God is my oath", origin: "Hebrew" },
-      { name: "Sofia", meaning: "Wisdom", origin: "Greek" },
-      { name: "Avery", meaning: "Ruler of elves", origin: "English" },
-      { name: "Ella", meaning: "All, completely", origin: "Germanic" },
-      { name: "Madison", meaning: "Son of Matthew", origin: "English" }
+    "Regional/Cultural Names": [
+      { name: "आरिया (Ariya)", meaning: "Noble melody", origin: "Modern" },
+      { name: "भूमिका (Bhumika)", meaning: "Earth, role", origin: "Gujarati" },
+      { name: "चांदनी (Chandni)", meaning: "Moonlight", origin: "Hindi" },
+      { name: "दर्शना (Darshana)", meaning: "Vision, philosophy", origin: "Marathi" },
+      { name: "एकता (Ekta)", meaning: "Unity", origin: "Punjabi" },
+      { name: "फूलकुमारी (Phoolkumari)", meaning: "Flower princess", origin: "Bengali" },
+      { name: "गीता (Geeta)", meaning: "Sacred song", origin: "Rajasthani" },
+      { name: "हेमा (Hema)", meaning: "Gold", origin: "Kannada" },
+      { name: "इंदिरा (Indira)", meaning: "Goddess Lakshmi", origin: "Sanskrit" },
+      { name: "ज्योति (Jyoti)", meaning: "Light, flame", origin: "Hindi" }
     ]
   }
 };
 
-// Generate lucky numbers based on birth date
-const generateLuckyNumbers = (date: Date): number[] => {
+// Generate lucky numbers based on Vedic numerology
+const generateVedicLuckyNumbers = (date: Date, nakshatra: string): number[] => {
   const day = date.getDate();
   const month = date.getMonth() + 1;
   const year = date.getFullYear();
   
-  const base = [day % 9 || 9, month % 9 || 9, (year % 9) || 9];
-  return [...new Set(base)].slice(0, 3);
+  // Vedic numerology calculations
+  const birthNumber = day % 9 || 9;
+  const lifePathNumber = (day + month + (year % 1000)) % 9 || 9;
+  
+  // Nakshatra-based number (simplified)
+  const nakshatraNumber = (nakshatra.length % 9) + 1;
+  
+  const numbers = [birthNumber, lifePathNumber, nakshatraNumber];
+  return [...new Set(numbers)].slice(0, 3);
 };
 
-// Generate lucky colors based on zodiac
-const getLuckyColors = (sign: string): string[] => {
+// Generate lucky colors based on Vedic Rashi
+const getVedicLuckyColors = (rashi: string): string[] => {
   const colorMap: { [key: string]: string[] } = {
-    'Aries': ['Red', 'Orange', 'Gold'],
-    'Taurus': ['Green', 'Pink', 'Blue'],
-    'Gemini': ['Yellow', 'Silver', 'Gray'],
-    'Cancer': ['White', 'Silver', 'Blue'],
-    'Leo': ['Gold', 'Orange', 'Red'],
-    'Virgo': ['Green', 'Brown', 'Navy'],
-    'Libra': ['Pink', 'Blue', 'Green'],
-    'Scorpio': ['Red', 'Black', 'Maroon'],
-    'Sagittarius': ['Purple', 'Turquoise', 'Yellow'],
-    'Capricorn': ['Black', 'Brown', 'Green'],
-    'Aquarius': ['Blue', 'Silver', 'Turquoise'],
-    'Pisces': ['Sea Green', 'Purple', 'White']
+    'Mesha': ['Red', 'Orange', 'Coral'],
+    'Vrishabha': ['White', 'Green', 'Pink'],
+    'Mithuna': ['Yellow', 'Green', 'Silver'],
+    'Karka': ['White', 'Silver', 'Sea Green'],
+    'Simha': ['Gold', 'Orange', 'Red'],
+    'Kanya': ['Green', 'White', 'Yellow'],
+    'Tula': ['White', 'Blue', 'Pink'],
+    'Vrishchika': ['Red', 'Maroon', 'Coral'],
+    'Dhanu': ['Yellow', 'Orange', 'Red'],
+    'Makara': ['Black', 'Dark Blue', 'Brown'],
+    'Kumbha': ['Blue', 'Cyan', 'Electric Blue'],
+    'Meena': ['Yellow', 'Orange', 'Pink']
   };
   
-  const signName = sign.split(' ')[0];
-  return colorMap[signName] || ['Gold', 'Silver', 'Blue'];
+  // Extract English rashi name from Sanskrit
+  const rashiName = rashi.split('(')[1]?.split(' -')[0] || 'Mesha';
+  return colorMap[rashiName] || ['Gold', 'Silver', 'White'];
 };
 
 export const calculateAstrology = async (birthData: BirthData): Promise<AstrologyResult> => {
-  // Simulate API processing time
+  // Simulate processing time
   await new Promise(resolve => setTimeout(resolve, 2000));
   
   const birthDate = new Date(birthData.birthDate);
-  const zodiacSign = getZodiacSign(birthDate);
-  const luckyNumbers = generateLuckyNumbers(birthDate);
-  const luckyColors = getLuckyColors(zodiacSign);
+  const vedicRashi = getVedicRashi(birthDate);
+  const nakshatra = getNakshatra(birthDate);
+  const luckyNumbers = generateVedicLuckyNumbers(birthDate, nakshatra);
+  const luckyColors = getVedicLuckyColors(vedicRashi);
   
-  // Get cultural preference or default
-  const cultural = birthData.culturalPreference || "Hindu/Sanskrit Names";
+  // Get cultural preference or default to Sanskrit/Hindu Names
+  const cultural = birthData.culturalPreference || "Sanskrit/Hindu Names";
   const gender = birthData.gender === 'unisex' ? Math.random() > 0.5 ? 'boy' : 'girl' : birthData.gender;
   
-  let availableNames = nameDatabase[gender as keyof typeof nameDatabase][cultural] || 
-                      nameDatabase[gender as keyof typeof nameDatabase]["Hindu/Sanskrit Names"];
+  let availableNames = vedicNameDatabase[gender as keyof typeof vedicNameDatabase][cultural] || 
+                      vedicNameDatabase[gender as keyof typeof vedicNameDatabase]["Sanskrit/Hindu Names"];
   
   // Filter by starting letter if specified
   if (birthData.startsWith) {
     const filtered = availableNames.filter(name => 
-      name.name.toUpperCase().startsWith(birthData.startsWith!.toUpperCase())
+      name.name.includes(birthData.startsWith!) || 
+      name.name.toLowerCase().startsWith(birthData.startsWith!.toLowerCase())
     );
     if (filtered.length > 0) {
       availableNames = filtered;
@@ -283,26 +264,37 @@ export const calculateAstrology = async (birthData: BirthData): Promise<Astrolog
     }
   }
   
-  // Select and score names (up to 50)
+  // Ensure minimum 10 names by adding names from other categories if needed
+  if (availableNames.length < 10) {
+    const allCategories = Object.values(vedicNameDatabase[gender as keyof typeof vedicNameDatabase]);
+    const additionalNames = allCategories.flat().filter(name => 
+      !availableNames.some(existing => existing.name === name.name)
+    );
+    availableNames = [...availableNames, ...additionalNames];
+  }
+  
+  // Select and score names (minimum 10, maximum 20)
   const selectedNames = availableNames
     .sort(() => Math.random() - 0.5)
-    .slice(0, Math.min(50, availableNames.length))
+    .slice(0, Math.max(10, Math.min(20, availableNames.length)))
     .map(name => ({
       ...name,
       score: Math.floor(Math.random() * 3) + 8 // Score between 8-10
     }));
   
-  const planetaryInfluence = `Born under ${zodiacSign}, your child carries the cosmic energy of determination and creativity.`;
+  const planetaryInfluence = `जन्म राशि ${vedicRashi} और नक्षत्र ${nakshatra} के अनुसार, आपके बच्चे में नेतृत्व की क्षमता और रचनात्मकता के गुण हैं।`;
   
   const recommendations = [
-    `Names starting with "${luckyNumbers[0]}" vibration will bring extra fortune to your child.`,
-    `The planetary alignment suggests ${luckyColors[0].toLowerCase()} will be a powerful color in their life journey.`,
-    `This birth chart indicates strong leadership qualities and creative potential.`,
-    `Consider performing the naming ceremony during auspicious hours for maximum cosmic blessing.`
+    `नक्षत्र ${nakshatra} के अनुसार नाम चुनने से बच्चे को आध्यात्मिक लाभ मिलेगा।`,
+    `राशि के अनुसार ${luckyColors[0]} रंग बच्चे के जीवन में शुभता लाएगा।`,
+    `जन्म कुंडली के अनुसार बच्चे में उत्कृष्ट बुद्धि और सफलता की संभावनाएं हैं।`,
+    `नामकरण संस्कार शुभ मुहूर्त में करवाने से अधिक फल मिलेगा।`,
+    `वैदिक ज्योतिष के अनुसार यह बच्चा भविष्य में महान कार्य करने की क्षमता रखता है।`
   ];
   
   return {
-    birthSign: zodiacSign,
+    birthSign: vedicRashi,
+    nakshatra,
     luckyNumbers,
     luckyColors,
     suggestedNames: selectedNames,

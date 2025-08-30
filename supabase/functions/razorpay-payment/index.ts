@@ -51,6 +51,8 @@ serve(async (req) => {
       }
     };
 
+    console.log("Creating Razorpay order with data:", orderData);
+
     const razorpayResponse = await fetch("https://api.razorpay.com/v1/orders", {
       method: "POST",
       headers: {
@@ -61,10 +63,13 @@ serve(async (req) => {
     });
 
     if (!razorpayResponse.ok) {
-      throw new Error("Failed to create Razorpay order");
+      const errorText = await razorpayResponse.text();
+      console.error("Razorpay API error:", errorText);
+      throw new Error(`Failed to create Razorpay order: ${errorText}`);
     }
 
     const order = await razorpayResponse.json();
+    console.log("Razorpay order created successfully:", order.id);
 
     // Store payment record in Supabase
     const supabaseService = createClient(
@@ -73,7 +78,7 @@ serve(async (req) => {
       { auth: { persistSession: false } }
     );
 
-    await supabaseService.from("payments").insert({
+    const { error: insertError } = await supabaseService.from("payments").insert({
       user_id: user.id,
       razorpay_order_id: order.id,
       amount: amount,
@@ -81,12 +86,28 @@ serve(async (req) => {
       status: "pending"
     });
 
-    // Create Razorpay checkout URL
-    const checkoutUrl = `https://checkout.razorpay.com/v1/checkout.js?key_id=${razorpayKeyId}&order_id=${order.id}&name=AstroName AI&description=${package_name}&theme.color=#9333ea&prefill.email=${user.email}&callback_url=${req.headers.get("origin")}/payment-success`;
+    if (insertError) {
+      console.error("Error inserting payment record:", insertError);
+      throw new Error("Failed to create payment record");
+    }
 
+    // Return order data for frontend Razorpay integration
     return new Response(JSON.stringify({ 
-      url: checkoutUrl,
-      order_id: order.id 
+      order: {
+        id: order.id,
+        amount: order.amount,
+        currency: order.currency,
+        key: razorpayKeyId
+      },
+      user: {
+        name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
+        email: user.email,
+        contact: user.user_metadata?.phone || ''
+      },
+      package: {
+        name: package_name,
+        credits: credits
+      }
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,

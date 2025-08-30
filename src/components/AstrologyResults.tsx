@@ -8,6 +8,7 @@ import { generatePDF, shareViaGmail } from '@/utils/pdfGenerator';
 
 interface AstrologyResult {
   birthSign: string;
+  nakshatra: string;
   luckyNumbers: number[];
   luckyColors: string[];
   suggestedNames: Array<{
@@ -55,8 +56,8 @@ const AstrologyResults = ({ result }: AstrologyResultsProps) => {
           </Button>
           <Button
             onClick={() => navigator.share && navigator.share({
-              title: 'My StarName Oracle Report',
-              text: `Check out my cosmic name suggestions! Birth Sign: ${result.birthSign}`,
+              title: 'My Vedic Astrology Name Report',
+              text: `Check out my Vedic name suggestions! Rashi: ${result.birthSign}, Nakshatra: ${result.nakshatra}`,
               url: window.location.href
             })}
             variant="outline"
@@ -68,28 +69,39 @@ const AstrologyResults = ({ result }: AstrologyResultsProps) => {
         </div>
       </Card>
 
-      {/* Birth Sign & Overview */}
+      {/* Vedic Birth Chart & Overview */}
       <Card className="glass-card p-8 text-center animate-glow">
         <div className="flex items-center justify-center gap-3 mb-6">
           <Star className="w-10 h-10 text-primary animate-pulse" />
-          <h2 className="text-4xl font-bold text-cosmic">Your Birth Sign</h2>
+          <h2 className="text-4xl font-bold text-cosmic">वैदिक जन्म कुंडली</h2>
           <Star className="w-10 h-10 text-primary animate-pulse" />
         </div>
-        <div className="text-6xl font-bold text-primary mb-4">{result.birthSign}</div>
+        
+        <div className="grid md:grid-cols-2 gap-8 mb-6">
+          <div className="text-center">
+            <h3 className="text-2xl font-bold text-primary mb-2">राशि (Rashi)</h3>
+            <div className="text-4xl font-bold text-primary mb-2">{result.birthSign}</div>
+          </div>
+          <div className="text-center">
+            <h3 className="text-2xl font-bold text-accent mb-2">नक्षत्र (Nakshatra)</h3>
+            <div className="text-3xl font-bold text-accent mb-2">{result.nakshatra}</div>
+          </div>
+        </div>
+        
         <p className="text-xl text-muted-foreground mb-6">{result.planetaryInfluence}</p>
         
-        <div className="flex flex-wrap justify-center gap-4 mb-6">
+        <div className="flex flex-wrap justify-center gap-6 mb-6">
           <div className="text-center">
-            <h4 className="font-semibold text-accent mb-2">Lucky Numbers</h4>
-            <div className="flex gap-2">
+            <h4 className="font-semibold text-accent mb-2">शुभ अंक (Lucky Numbers)</h4>
+            <div className="flex gap-2 justify-center">
               {result.luckyNumbers.map((num) => (
-                <Badge key={num} className="nebula-gradient text-white px-3 py-1">{num}</Badge>
+                <Badge key={num} className="nebula-gradient text-white px-3 py-1 text-lg">{num}</Badge>
               ))}
             </div>
           </div>
           <div className="text-center">
-            <h4 className="font-semibold text-accent mb-2">Lucky Colors</h4>
-            <div className="flex gap-2">
+            <h4 className="font-semibold text-accent mb-2">शुभ रंग (Lucky Colors)</h4>
+            <div className="flex gap-2 justify-center">
               {result.luckyColors.map((color) => (
                 <Badge key={color} variant="outline" className="border-primary/40 text-primary">{color}</Badge>
               ))}
@@ -98,18 +110,21 @@ const AstrologyResults = ({ result }: AstrologyResultsProps) => {
         </div>
       </Card>
 
-      {/* Name Suggestions */}
+      {/* Vedic Name Suggestions */}
       <Card className="glass-card p-8">
         <div className="flex items-center gap-3 mb-8 justify-center">
           <Crown className="w-8 h-8 text-primary" />
-          <h3 className="text-3xl font-bold text-cosmic">Cosmic Name Suggestions</h3>
+          <h3 className="text-3xl font-bold text-cosmic">वैदिक नाम सुझाव</h3>
           <Crown className="w-8 h-8 text-primary" />
         </div>
         
         <div className="mb-6 text-center">
           <Badge className="nebula-gradient text-white px-4 py-2 text-lg">
-            {result.suggestedNames.length} Personalized Names
+            {result.suggestedNames.length} व्यक्तिगत नाम सुझाव
           </Badge>
+          <p className="text-muted-foreground mt-2">
+            राशि और नक्षत्र के आधार पर चुने गए शुभ नाम
+          </p>
         </div>
         
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -141,11 +156,11 @@ const AstrologyResults = ({ result }: AstrologyResultsProps) => {
         </div>
       </Card>
 
-      {/* Cosmic Recommendations */}
+      {/* Vedic Guidance */}
       <Card className="glass-card p-8">
         <div className="flex items-center gap-3 mb-6 justify-center">
           <Eye className="w-8 h-8 text-accent" />
-          <h3 className="text-2xl font-bold text-cosmic">Cosmic Guidance</h3>
+          <h3 className="text-2xl font-bold text-cosmic">वैदिक मार्गदर्शन</h3>
           <Eye className="w-8 h-8 text-accent" />
         </div>
         
@@ -156,6 +171,14 @@ const AstrologyResults = ({ result }: AstrologyResultsProps) => {
               <p className="text-foreground leading-relaxed">{rec}</p>
             </div>
           ))}
+        </div>
+        
+        <div className="mt-8 p-4 bg-primary/10 rounded-lg border border-primary/20">
+          <h4 className="text-lg font-semibold text-primary mb-2">नामकरण संस्कार की सलाह</h4>
+          <p className="text-muted-foreground text-sm">
+            वैदिक परंपरा के अनुसार, बच्चे का नामकरण जन्म के 10वें या 12वें दिन शुभ मुहूर्त में करना चाहिए। 
+            पंडित जी से सलाह लेकर उचित समय का चुनाव करें।
+          </p>
         </div>
       </Card>
     </div>
