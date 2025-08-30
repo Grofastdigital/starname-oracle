@@ -1,4 +1,3 @@
-
 export interface BirthData {
   birthDate: string;
   birthTime: string;
@@ -24,6 +23,76 @@ export interface AstrologyResult {
   planetaryInfluence: string;
   recommendations: string[];
 }
+
+// Language-specific content
+const languageContent = {
+  Tamil: {
+    planetaryInfluence: (rashi: string, nakshatra: string) => 
+      `பிறப்பு ராசி ${rashi} மற்றும் நட்சத்திரம் ${nakshatra} படி, உங்கள் குழந்தையில் தலைமைத்துவ திறன் மற்றும் படைப்பாற்றல் குணங்கள் உள்ளன.`,
+    recommendations: (nakshatra: string, colors: string[]) => [
+      `நட்சத்திரம் ${nakshatra} படி பெயர் தேர்வு செய்வது குழந்தைக்கு ஆன்மீக நன்மையைத் தரும்.`,
+      `ராசி படி ${colors[0]} நிறம் குழந்தையின் வாழ்வில் நல்லது கொண்டு வரும்.`,
+      `பிறப்பு ஜாதகம் படி குழந்தையில் சிறந்த அறிவு மற்றும் வெற்றியின் வாய்ப்புகள் உள்ளன.`,
+      `நாமகரண சடங்கை நல்ல நேரத்தில் செய்வது அதிக பலன் தரும்.`,
+      `வேத ஜோதிடம் படி இந்த குழந்தை எதிர்காலத்தில் சிறந்த செயல்கள் செய்யும் திறன் கொண்டுள்ளது.`
+    ]
+  },
+  Hindi: {
+    planetaryInfluence: (rashi: string, nakshatra: string) => 
+      `जन्म राशि ${rashi} और नक्षत्र ${nakshatra} के अनुसार, आपके बच्चे में नेतृत्व की क्षमता और रचनात्मकता के गुण हैं।`,
+    recommendations: (nakshatra: string, colors: string[]) => [
+      `नक्षत्र ${nakshatra} के अनुसार नाम चुनने से बच्चे को आध्यात्मिक लाभ मिलेगा।`,
+      `राशि के अनुसार ${colors[0]} रंग बच्चे के जीवन में शुभता लाएगा।`,
+      `जन्म कुंडली के अनुसार बच्चे में उत्कृष्ट बुद्धि और सफलता की संभावनाएं हैं।`,
+      `नामकरण संस्कार शुभ मुहूर्त में करवाने से अधिक फल मिलेगा।`,
+      `वैदिक ज्योतिष के अनुसार यह बच्चा भविष्य में महान कार्य करने की क्षमता रखता है।`
+    ]
+  },
+  Malayalam: {
+    planetaryInfluence: (rashi: string, nakshatra: string) => 
+      `ജന്മ രാശി ${rashi} യും നക്ഷത്രം ${nakshatra} യും അനുസരിച്ച്, നിങ്ങളുടെ കുട്ടിയിൽ നേതൃത്വ കഴിവും സൃജനാത്മകതയും ഉണ്ട്.`,
+    recommendations: (nakshatra: string, colors: string[]) => [
+      `നക്ഷത്രം ${nakshatra} അനുസരിച്ച് പേര് തിരഞ്ഞെടുക്കുന്നത് കുട്ടിക്ക് ആത്മീയ ഗുണം നൽകും.`,
+      `രാശി അനുസരിച്ച് ${colors[0]} നിറം കുട്ടിയുടെ ജീവിതത്തിൽ ഭാഗ്യം കൊണ്ടുവരും.`,
+      `ജന്മ ജാതകം അനുസരിച്ച് കുട്ടിയിൽ മികച്ച ബുദ്ധിയും വിജയ സാധ്യതകളും ഉണ്ട്.`,
+      `നാമകരണ ചടങ്ങ് ശുഭ സമയത്ത് നടത്തുന്നത് കൂടുതൽ ഫലം നൽകും.`,
+      `വേദ ജ്യോതിഷം അനുസരിച്ച് ഈ കുട്ടിക്ക് ഭാവിയിൽ മഹത്തായ കാര്യങ്ങൾ ചെയ്യാനുള്ള കഴിവുണ്ട്.`
+    ]
+  },
+  Telugu: {
+    planetaryInfluence: (rashi: string, nakshatra: string) => 
+      `జన్మ రాశి ${rashi} మరియు నక్షత్రం ${nakshatra} ప్రకారం, మీ పిల్లవాడిలో నాయకత్వ గుణాలు మరియు సృజనాత్మకత ఉన్నాయి.`,
+    recommendations: (nakshatra: string, colors: string[]) => [
+      `నక్షత్రం ${nakshatra} ప్రకారం పేరు ఎంచుకోవడం పిల్లవాడికి ఆధ్యాత్మిక ప్రయోజనం చేకూరుస్తుంది.`,
+      `రాశి ప్రకారం ${colors[0]} రంగు పిల్లవాడి జీవితంలో అదృష్టం తెస్తుంది.`,
+      `జన్మ జాతకం ప్రకారం పిల్లవాడిలో అద్భుతమైన తెలివితేటలు మరియు విజయ అవకాశాలు ఉన్నాయి.`,
+      `నామకరణ సంస్కారాన్ని శుభ సమయంలో చేయడం వల్ల ఎక్కువ ఫలితం లభిస్తుంది.`,
+      `వేద జ్యోతిష్యం ప్రకారం ఈ పిల్లవాడు భవిష్యత్తులో గొప్ప పనులు చేసే సామర్థ్యం కలిగి ఉన్నాడు.`
+    ]
+  },
+  Kannada: {
+    planetaryInfluence: (rashi: string, nakshatra: string) => 
+      `ಜನ್ಮ ರಾಶಿ ${rashi} ಮತ್ತು ನಕ್ಷತ್ರ ${nakshatra} ಪ್ರಕಾರ, ನಿಮ್ಮ ಮಗುವಿನಲ್ಲಿ ನಾಯಕತ್ವ ಮತ್ತು ಸೃಜನಶೀಲತೆಯ ಗುಣಗಳಿವೆ.`,
+    recommendations: (nakshatra: string, colors: string[]) => [
+      `ನಕ್ಷತ್ರ ${nakshatra} ಪ್ರಕಾರ ಹೆಸರು ಆಯ್ಕೆ ಮಾಡುವುದರಿಂದ ಮಗುವಿಗೆ ಆಧ್ಯಾತ್ಮಿಕ ಪ್ರಯೋಜನ ಸಿಗುತ್ತದೆ.`,
+      `ರಾಶಿ ಪ್ರಕಾರ ${colors[0]} ಬಣ್ಣ ಮಗುವಿನ ಜೀವನದಲ್ಲಿ ಅದೃಷ್ಟ ತರುತ್ತದೆ.`,
+      `ಜನ್ಮ ಜಾತಕ ಪ್ರಕಾರ ಮಗುವಿನಲ್ಲಿ ಅತ್ಯುತ್ತಮ ಬುದ್ಧಿ ಮತ್ತು ಯಶಸ್ಸಿನ ಸಾಧ್ಯತೆಗಳಿವೆ.`,
+      `ನಾಮಕರಣ ಸಂಸ್ಕಾರವನ್ನು ಶುಭ ಮುಹೂರ್ತದಲ್ಲಿ ಮಾಡುವುದರಿಂದ ಹೆಚ್ಚು ಫಲ ಸಿಗುತ್ತದೆ.`,
+      `ವೈದಿಕ ಜ್ಯೋತಿಷ್ಯ ಪ್ರಕಾರ ಈ ಮಗು ಭವಿಷ್ಯದಲ್ಲಿ ಮಹಾನ್ ಕಾರ್ಯಗಳನ್ನು ಮಾಡುವ ಸಾಮರ್ಥ್ಯವನ್ನು ಹೊಂದಿದೆ.`
+    ]
+  },
+  English: {
+    planetaryInfluence: (rashi: string, nakshatra: string) => 
+      `According to birth rashi ${rashi} and nakshatra ${nakshatra}, your child has leadership qualities and creative abilities.`,
+    recommendations: (nakshatra: string, colors: string[]) => [
+      `Choosing a name according to nakshatra ${nakshatra} will bring spiritual benefits to the child.`,
+      `According to the rashi, ${colors[0]} color will bring good fortune in the child's life.`,
+      `According to the birth chart, the child has excellent intelligence and potential for success.`,
+      `Performing the naming ceremony at an auspicious time will yield greater results.`,
+      `According to Vedic astrology, this child has the ability to do great work in the future.`
+    ]
+  }
+};
 
 // Indian Vedic Rashi (Zodiac Signs) with Sanskrit names
 const getVedicRashi = (date: Date): string => {
@@ -232,6 +301,10 @@ export const calculateAstrology = async (birthData: BirthData): Promise<Astrolog
   const luckyNumbers = generateVedicLuckyNumbers(birthDate, nakshatra);
   const luckyColors = getVedicLuckyColors(vedicRashi);
   
+  // Get language-specific content
+  const selectedLanguage = birthData.preferredLanguage || 'English';
+  const langContent = languageContent[selectedLanguage as keyof typeof languageContent] || languageContent.English;
+  
   // Get cultural preference or default to Sanskrit/Hindu Names
   const cultural = birthData.culturalPreference || "Sanskrit/Hindu Names";
   const gender = birthData.gender === 'unisex' ? Math.random() > 0.5 ? 'boy' : 'girl' : birthData.gender;
@@ -282,23 +355,13 @@ export const calculateAstrology = async (birthData: BirthData): Promise<Astrolog
       score: Math.floor(Math.random() * 3) + 8 // Score between 8-10
     }));
   
-  const planetaryInfluence = `जन्म राशि ${vedicRashi} और नक्षत्र ${nakshatra} के अनुसार, आपके बच्चे में नेतृत्व की क्षमता और रचनात्मकता के गुण हैं।`;
-  
-  const recommendations = [
-    `नक्षत्र ${nakshatra} के अनुसार नाम चुनने से बच्चे को आध्यात्मिक लाभ मिलेगा।`,
-    `राशि के अनुसार ${luckyColors[0]} रंग बच्चे के जीवन में शुभता लाएगा।`,
-    `जन्म कुंडली के अनुसार बच्चे में उत्कृष्ट बुद्धि और सफलता की संभावनाएं हैं।`,
-    `नामकरण संस्कार शुभ मुहूर्त में करवाने से अधिक फल मिलेगा।`,
-    `वैदिक ज्योतिष के अनुसार यह बच्चा भविष्य में महान कार्य करने की क्षमता रखता है।`
-  ];
-  
   return {
     birthSign: vedicRashi,
     nakshatra,
     luckyNumbers,
     luckyColors,
     suggestedNames: selectedNames,
-    planetaryInfluence,
-    recommendations
+    planetaryInfluence: langContent.planetaryInfluence(vedicRashi, nakshatra),
+    recommendations: langContent.recommendations(nakshatra, luckyColors)
   };
 };

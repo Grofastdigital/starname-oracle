@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { MessageCircle, Send, X, Calendar, User } from 'lucide-react';
+import { MessageCircle, Send, X, Star, Crown, Sparkles } from 'lucide-react';
 
 interface Message {
   id: number;
@@ -17,7 +17,7 @@ const ChatBot = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
-      text: "Hello! I'm your AstroName AI assistant. I can help you with astrological queries or connect you with a real astrologer. How can I assist you today?",
+      text: "Hello! I'm your AstroName AI assistant. I can help you with name meanings, astrological guidance, and Vedic naming traditions. How can I assist you today?",
       isUser: false,
       timestamp: new Date()
     }
@@ -53,41 +53,58 @@ const ChatBot = () => {
   const getAIResponse = (userInput: string): string => {
     const input = userInput.toLowerCase();
     
-    if (input.includes('astrologer') || input.includes('appointment') || input.includes('book')) {
-      return "I can help you book an appointment with our expert astrologers! Our certified astrologers are available for personalized consultations. Would you like to schedule a session? Please provide your preferred date and time.";
+    if (input.includes('name') && input.includes('meaning')) {
+      return "Name meanings are deeply connected to cosmic energies! Each name carries vibrations that influence personality and destiny. Would you like me to explain the meaning of a specific name or help you understand how names connect to birth charts?";
     }
     
-    if (input.includes('name') || input.includes('baby')) {
-      return "For personalized baby name suggestions based on astrological calculations, please use our main consultation form. I can also help you understand how different names align with cosmic energies. What specific aspect of naming would you like to know about?";
+    if (input.includes('rashi') || input.includes('zodiac')) {
+      return "Rashi (zodiac signs) play a crucial role in Vedic naming! Each rashi has specific letters and sounds that bring good fortune. For example, Aries (Mesha) names often start with A, L, E, while Taurus (Vrishabha) names begin with B, V, U. Would you like to know more about your child's rashi?";
     }
     
-    if (input.includes('birth chart') || input.includes('horoscope')) {
-      return "Birth charts reveal the cosmic blueprint of personality and destiny. Our AI analyzes planetary positions at the time of birth to suggest harmonious names. Would you like to know more about how birth charts influence name selection?";
+    if (input.includes('nakshatra') || input.includes('star')) {
+      return "Nakshatras are the 27 lunar mansions in Vedic astrology! Each nakshatra has specific syllables for naming. For instance, Ashwini nakshatra uses sounds like 'Chu', 'Che', 'Cho', 'La'. This creates perfect harmony between the name and cosmic energies. What's your child's birth date?";
     }
     
-    return "I'm here to help with all your astrological queries! You can ask me about birth charts, name meanings, planetary influences, or book an appointment with our expert astrologers. What would you like to explore?";
+    if (input.includes('lucky') || input.includes('number')) {
+      return "Lucky numbers in Vedic astrology come from your birth date and nakshatra! These numbers influence major life decisions and can guide name selection. The birth date number and life path number create a unique cosmic signature. Would you like to know how to calculate these?";
+    }
+    
+    if (input.includes('tamil') || input.includes('malayalam') || input.includes('telugu') || input.includes('kannada')) {
+      return "Regional names carry beautiful cultural significance! Tamil names often honor deities and nature, Malayalam names reflect spiritual qualities, Telugu names celebrate prosperity, and Kannada names embody strength. Each tradition offers unique cosmic connections. Which language interests you most?";
+    }
+    
+    if (input.includes('boy') || input.includes('girl') || input.includes('gender')) {
+      return "Gender influences name selection in Vedic traditions! Boys' names often emphasize strength, leadership, and divine qualities, while girls' names celebrate beauty, wisdom, and prosperity. However, many names carry universal positive vibrations. Are you looking for names for a boy or girl?";
+    }
+    
+    if (input.includes('time') || input.includes('birth time')) {
+      return "Birth time is crucial for accurate astrological calculations! It determines the exact nakshatra, rashi, and planetary positions. Even a difference of minutes can change the cosmic influences. Make sure to include AM/PM when providing birth time for the most accurate name suggestions.";
+    }
+    
+    if (input.includes('credit') || input.includes('payment') || input.includes('package')) {
+      return "Our credit packages offer great value! The Basic package (₹499 for 50 credits) is perfect for one child, Popular package (₹999 for 100 credits) works for multiple consultations, and Premium package (₹1899 for 200 credits) includes astrologer consultations. Each consultation uses 1 credit.";
+    }
+    
+    return "I'm here to help with all your astrological naming queries! You can ask me about:\n\n🌟 Name meanings and significance\n🔮 Rashi and Nakshatra guidance\n📊 Lucky numbers and colors\n🌍 Regional naming traditions\n⏰ Birth time importance\n💎 Cosmic connections\n\nWhat would you like to explore?";
   };
 
-  const handleBookAppointment = () => {
-    const appointmentMessage: Message = {
-      id: messages.length + 1,
-      text: "I'd like to book an appointment with a real astrologer",
-      isUser: true,
-      timestamp: new Date()
-    };
-
-    setMessages(prev => [...prev, appointmentMessage]);
-
-    setTimeout(() => {
-      const response: Message = {
-        id: messages.length + 2,
-        text: "Perfect! I'll connect you with our expert astrologers. Please choose your preferred consultation type:\n\n📞 Phone Consultation - ₹1500/hour\n💻 Video Call - ₹2000/hour\n📝 Chat Session - ₹1000/hour\n\nOur astrologers are available Monday-Sunday, 9 AM - 9 PM. When would you prefer to schedule your session?",
-        isUser: false,
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, response]);
-    }, 1000);
-  };
+  const quickSuggestions = [
+    {
+      text: "Explain Rashi importance",
+      icon: Star,
+      action: () => setInputMessage("How does rashi influence name selection?")
+    },
+    {
+      text: "Name meaning guidance",
+      icon: Crown,
+      action: () => setInputMessage("How do name meanings affect destiny?")
+    },
+    {
+      text: "Birth time significance",
+      icon: Sparkles,
+      action: () => setInputMessage("Why is exact birth time important for naming?")
+    }
+  ];
 
   if (!isOpen) {
     return (
@@ -95,6 +112,7 @@ const ChatBot = () => {
         <Button
           onClick={() => setIsOpen(true)}
           className="nebula-gradient text-white px-6 py-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 animate-pulse font-semibold text-lg"
+          data-testid="chatbot-toggle"
         >
           <MessageCircle className="w-6 h-6 mr-2" />
           Chat With AI
@@ -148,27 +166,24 @@ const ChatBot = () => {
           ))}
         </div>
 
-        {/* Quick Actions */}
+        {/* Quick Suggestions */}
         <div className="p-2 border-t border-primary/20">
-          <div className="flex gap-2 mb-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleBookAppointment}
-              className="text-xs border-primary/40 hover:bg-primary/20"
-            >
-              <Calendar className="w-3 h-3 mr-1" />
-              Book Astrologer
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setInputMessage("How do names affect destiny?")}
-              className="text-xs border-primary/40 hover:bg-primary/20"
-            >
-              <User className="w-3 h-3 mr-1" />
-              Name Guidance
-            </Button>
+          <div className="flex flex-wrap gap-1 mb-2">
+            {quickSuggestions.map((suggestion, index) => {
+              const IconComponent = suggestion.icon;
+              return (
+                <Button
+                  key={index}
+                  variant="outline"
+                  size="sm"
+                  onClick={suggestion.action}
+                  className="text-xs border-primary/40 hover:bg-primary/20 flex-1"
+                >
+                  <IconComponent className="w-3 h-3 mr-1" />
+                  {suggestion.text}
+                </Button>
+              );
+            })}
           </div>
         </div>
 
@@ -178,7 +193,7 @@ const ChatBot = () => {
             <Input
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
-              placeholder="Ask about astrology or book consultation..."
+              placeholder="Ask about names, astrology, or cosmic guidance..."
               onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
               className="text-sm"
             />

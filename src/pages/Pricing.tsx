@@ -5,7 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Star, Crown, CreditCard, ArrowLeft, Check } from 'lucide-react';
+import { Star, Crown, CreditCard, ArrowLeft, Check, User } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import StarField from '@/components/StarField';
@@ -27,26 +27,26 @@ const Pricing = () => {
     {
       id: 'basic',
       name: 'Basic Package',
-      credits: 10,
+      credits: 50,
       price: 499,
       popular: false,
-      features: ['10 Vedic Name Consultations', 'Rashi & Nakshatra Analysis', 'Email Support', 'Lucky Numbers & Colors']
+      features: ['50 Vedic Name Consultations', 'Rashi & Nakshatra Analysis', 'Email Support', 'Lucky Numbers & Colors', 'Multi-Language Names']
     },
     {
       id: 'popular',
       name: 'Popular Package',  
-      credits: 25,
+      credits: 100,
       price: 999,
       popular: true,
-      features: ['25 Vedic Name Consultations', 'Detailed Astrological Analysis', 'Priority Email Support', 'PDF Reports', 'Phonetic Guidelines']
+      features: ['100 Vedic Name Consultations', 'Detailed Astrological Analysis', 'Priority Email Support', 'PDF Reports', 'Phonetic Guidelines', 'Email Sharing']
     },
     {
       id: 'premium',
       name: 'Premium Package',
-      credits: 50,
+      credits: 200,
       price: 1899,
       popular: false,
-      features: ['50 Vedic Name Consultations', 'Complete Astrological Analysis', '24/7 Priority Support', 'PDF Reports', 'Family Sharing', 'Gemstone Recommendations']
+      features: ['200 Vedic Name Consultations', 'Complete Astrological Analysis', '24/7 Priority Support', 'PDF Reports', 'Family Sharing', 'Gemstone Recommendations', 'Astrologer Consultation Included']
     }
   ];
 
@@ -271,9 +271,9 @@ const Pricing = () => {
                 <p className="text-muted-foreground text-sm">Names suggested based on your child's Rashi and Nakshatra for astrological alignment</p>
               </div>
               <div>
-                <CreditCard className="w-12 h-12 text-primary mx-auto mb-4" />
-                <h4 className="text-lg font-semibold mb-2 text-foreground">Secure Payments</h4>
-                <p className="text-muted-foreground text-sm">Safe and secure payment processing with Razorpay</p>
+                <User className="w-12 h-12 text-primary mx-auto mb-4" />
+                <h4 className="text-lg font-semibold mb-2 text-foreground">Expert Astrologers</h4>
+                <p className="text-muted-foreground text-sm">Premium package includes consultation with certified astrologers</p>
               </div>
             </div>
           </Card>

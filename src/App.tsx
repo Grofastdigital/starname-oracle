@@ -10,6 +10,7 @@ import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import Pricing from "./pages/Pricing";
 import PaymentSuccess from "./pages/PaymentSuccess";
+import AstrologerBooking from "./pages/AstrologerBooking";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -37,6 +38,11 @@ const App = () => (
             <Route path="/pricing" element={
               <ProtectedRoute>
                 <Pricing />
+              </ProtectedRoute>
+            } />
+            <Route path="/astrologer-booking" element={
+              <ProtectedRoute>
+                <AstrologerBooking />
               </ProtectedRoute>
             } />
             <Route path="/payment-success" element={
