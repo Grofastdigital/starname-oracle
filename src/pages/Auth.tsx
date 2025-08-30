@@ -30,7 +30,7 @@ const Auth = () => {
         <Card className="glass-card p-8 max-w-md w-full text-center">
           <div className="flex items-center justify-center gap-3 mb-6">
             <Star className="w-10 h-10 text-primary animate-pulse" />
-            <h1 className="text-3xl font-bold text-cosmic">StarName Oracle</h1>
+            <h1 className="text-3xl font-bold text-cosmic">AstroName AI</h1>
             <Star className="w-10 h-10 text-primary animate-pulse" />
           </div>
           

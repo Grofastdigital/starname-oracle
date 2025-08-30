@@ -36,6 +36,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const fetchProfile = async (userId: string) => {
     try {
+      console.log('Fetching profile for user:', userId)
       const { data, error } = await supabase
         .from('user_profiles')
         .select('*')
@@ -47,6 +48,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return
       }
 
+      console.log('Profile fetched successfully:', data)
       setProfile(data)
     } catch (error) {
       console.error('Error fetching profile:', error)
@@ -60,27 +62,61 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }
 
   useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null)
-      if (session?.user) {
-        fetchProfile(session.user.id)
-      }
-      setLoading(false)
-    })
+    let timeoutId: NodeJS.Timeout
 
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    // Set up auth state listener FIRST - CRITICAL: Not async!
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('Auth state changed:', event, session?.user?.id)
+      
+      // Only synchronous state updates here
       setUser(session?.user ?? null)
+      
+      // Clear any existing timeout
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+      }
+      
+      // Defer profile fetching with setTimeout to avoid deadlock
       if (session?.user) {
-        await fetchProfile(session.user.id)
+        timeoutId = setTimeout(() => {
+          fetchProfile(session.user.id)
+        }, 0)
       } else {
         setProfile(null)
       }
+      
+      // Always set loading to false
       setLoading(false)
     })
 
-    return () => subscription.unsubscribe()
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('Initial session:', session?.user?.id)
+      setUser(session?.user ?? null)
+      
+      if (session?.user) {
+        // Defer profile fetching
+        timeoutId = setTimeout(() => {
+          fetchProfile(session.user.id)
+        }, 0)
+      }
+      
+      setLoading(false)
+    })
+
+    // Add a safety timeout to prevent infinite loading
+    const safetyTimeout = setTimeout(() => {
+      console.log('Safety timeout triggered - stopping loading')
+      setLoading(false)
+    }, 10000) // 10 second max loading time
+
+    return () => {
+      subscription.unsubscribe()
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+      }
+      clearTimeout(safetyTimeout)
+    }
   }, [])
 
   const signInWithGoogle = async () => {

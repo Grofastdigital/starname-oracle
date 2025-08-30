@@ -17,7 +17,7 @@ const ChatBot = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
-      text: "Hello! I'm your StarName Oracle assistant. I can help you with astrological queries or connect you with a real astrologer. How can I assist you today?",
+      text: "Hello! I'm your AstroName AI assistant. I can help you with astrological queries or connect you with a real astrologer. How can I assist you today?",
       isUser: false,
       timestamp: new Date()
     }
@@ -94,9 +94,10 @@ const ChatBot = () => {
       <div className="fixed bottom-6 right-6 z-50">
         <Button
           onClick={() => setIsOpen(true)}
-          className="nebula-gradient text-white rounded-full w-16 h-16 shadow-lg hover:shadow-xl transition-all duration-300 animate-pulse"
+          className="nebula-gradient text-white px-6 py-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 animate-pulse font-semibold text-lg"
         >
-          <MessageCircle className="w-8 h-8" />
+          <MessageCircle className="w-6 h-6 mr-2" />
+          Chat With AI
         </Button>
       </div>
     );
@@ -109,7 +110,7 @@ const ChatBot = () => {
         <div className="flex items-center justify-between p-4 border-b border-primary/20">
           <div className="flex items-center gap-2">
             <MessageCircle className="w-5 h-5 text-primary" />
-            <h3 className="font-semibold text-cosmic">StarName Assistant</h3>
+            <h3 className="font-semibold text-cosmic">AstroName AI Assistant</h3>
           </div>
           <Button
             variant="ghost"

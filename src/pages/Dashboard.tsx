@@ -30,7 +30,7 @@ const Dashboard = () => {
         <header className="flex items-center justify-between mb-12">
           <div className="flex items-center gap-3">
             <Star className="w-10 h-10 text-primary animate-pulse" />
-            <h1 className="text-4xl font-bold text-cosmic">StarName Oracle</h1>
+            <h1 className="text-4xl font-bold text-cosmic">AstroName AI</h1>
           </div>
           
           <div className="flex items-center gap-4">

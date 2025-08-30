@@ -10,7 +10,6 @@ import { calculateAstrology, type BirthData, type AstrologyResult } from '@/util
 import { Star, Sparkles, Crown, ArrowLeft, CreditCard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -27,6 +26,8 @@ const Index = () => {
 
     setIsLoading(true);
     try {
+      console.log('Starting consultation processing...');
+      
       // Deduct credit first
       const { error: creditError } = await supabase
         .from('user_profiles')
@@ -59,8 +60,12 @@ const Index = () => {
         throw consultationError;
       }
 
-      // Calculate astrology
+      console.log('Consultation created, calculating astrology...');
+
+      // Calculate astrology with faster processing
       const astrologyResult = await calculateAstrology(data);
+      
+      console.log('Astrology calculated, updating consultation...');
       
       // Update consultation with results
       const { error: updateError } = await supabase
@@ -80,6 +85,7 @@ const Index = () => {
         throw updateError;
       }
 
+      console.log('Consultation completed successfully');
       setResult(astrologyResult);
       await refreshProfile();
       toast.success('Consultation completed successfully!');
