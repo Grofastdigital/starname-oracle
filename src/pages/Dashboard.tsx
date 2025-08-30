@@ -5,22 +5,25 @@ import { supabase } from '@/integrations/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Star, Sparkles, Crown, LogOut, CreditCard, Plus, User, MessageCircle, BookOpenCheck, Heart, Calendar, TrendingUp } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { Star, Sparkles, Crown, LogOut, CreditCard, Plus, User, MessageCircle, BookOpenCheck, Heart, Calendar, TrendingUp, Eye } from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
 import StarField from '@/components/StarField'
 import ChakraBackground from '@/components/ChakraBackground'
 import ChatBot from '@/components/ChatBot'
 
 const Dashboard = () => {
   const { profile, signOut } = useAuth()
+  const navigate = useNavigate()
   const [consultationStats, setConsultationStats] = useState({
     total: 0,
     recent: [] as any[]
   })
+  const [bookingHistory, setBookingHistory] = useState([])
 
   useEffect(() => {
     if (profile?.id) {
       fetchConsultationStats()
+      fetchBookingHistory()
     }
   }, [profile?.id])
 
@@ -43,12 +46,50 @@ const Dashboard = () => {
     }
   }
 
+  const fetchBookingHistory = async () => {
+    // Simulate booking history - in real app, this would come from a bookings table
+    const mockBookings = [
+      {
+        id: 1,
+        astrologer: 'Dr. Ravi Kumar',
+        date: '2025-08-25',
+        time: '2:00 PM',
+        status: 'completed'
+      },
+      {
+        id: 2,
+        astrologer: 'Smt. Lakshmi Devi',
+        date: '2025-08-28',
+        time: '10:30 AM', 
+        status: 'upcoming'
+      }
+    ]
+    setBookingHistory(mockBookings)
+  }
+
   const handleSignOut = async () => {
     try {
       await signOut()
     } catch (error) {
       console.error('Sign out error:', error)
     }
+  }
+
+  const handleConsultationClick = (consultation) => {
+    // Navigate to results page with consultation data
+    navigate('/consultation', { 
+      state: { 
+        result: {
+          birthSign: consultation.birth_sign,
+          nakshatra: consultation.nakshatra || 'Ashwini',
+          luckyNumbers: consultation.lucky_numbers || [1, 3, 9],
+          luckyColors: consultation.lucky_colors || ['Red', 'Yellow'],
+          suggestedNames: consultation.suggested_names || [],
+          planetaryInfluence: consultation.planetary_influence || 'Strong planetary alignment',
+          recommendations: consultation.recommendations || []
+        }
+      }
+    })
   }
 
   return (
@@ -102,7 +143,7 @@ const Dashboard = () => {
           </div>
           
           <p className="text-muted-foreground mb-6">
-            Choose from our AI-powered services to find the perfect cosmic name for your little star
+            Unveil the cosmic secrets hidden in the stars for your little one's perfect name
           </p>
         </Card>
 
@@ -122,7 +163,7 @@ const Dashboard = () => {
           
           <Card className="glass-card p-6 text-center hover:scale-105 transition-all duration-300 hover:shadow-lg hover:shadow-accent/20">
             <User className="w-12 h-12 text-accent mx-auto mb-4" />
-            <h3 className="text-xl font-semibold mb-2 text-foreground">👨‍🏫 Expert Astrologer</h3>
+            <h3 className="text-xl font-semibold mb-2 text-foreground">👨‍🏫 Expert Astrologer Connect</h3>
             <p className="text-muted-foreground mb-4">Book personal consultation with certified astrologers</p>
             <Link to="/astrologer-booking">
               <Button 
@@ -176,8 +217,8 @@ const Dashboard = () => {
 
           <Card className="glass-card p-6 text-center hover:scale-105 transition-all duration-300">
             <Calendar className="w-12 h-12 text-accent mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2 text-foreground">This Month</h3>
-            <p className="text-2xl font-bold text-accent">{consultationStats.total}</p>
+            <h3 className="text-lg font-semibold mb-2 text-foreground">Booked Appointments</h3>
+            <p className="text-2xl font-bold text-accent">{bookingHistory.length}</p>
           </Card>
         </div>
 
@@ -188,7 +229,11 @@ const Dashboard = () => {
           {consultationStats.recent.length > 0 ? (
             <div className="space-y-4">
               {consultationStats.recent.map((consultation, index) => (
-                <Card key={consultation.id} className="p-4 border border-primary/20 hover:border-primary/40 transition-all duration-300">
+                <Card 
+                  key={consultation.id} 
+                  className="p-4 border border-primary/20 hover:border-primary/40 transition-all duration-300 cursor-pointer hover:bg-primary/5"
+                  onClick={() => handleConsultationClick(consultation)}
+                >
                   <div className="flex items-center justify-between">
                     <div>
                       <h4 className="font-semibold text-foreground">
@@ -201,17 +246,20 @@ const Dashboard = () => {
                         {new Date(consultation.created_at).toLocaleDateString()}
                       </p>
                     </div>
-                    <div className="text-right">
-                      <Badge 
-                        className={consultation.status === 'completed' ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'}
-                      >
-                        {consultation.status}
-                      </Badge>
-                      {consultation.suggested_names && (
-                        <p className="text-sm text-accent mt-1">
-                          {consultation.suggested_names.length} names generated
-                        </p>
-                      )}
+                    <div className="text-right flex items-center gap-3">
+                      <div>
+                        <Badge 
+                          className={consultation.status === 'completed' ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'}
+                        >
+                          {consultation.status}
+                        </Badge>
+                        {consultation.suggested_names && (
+                          <p className="text-sm text-accent mt-1">
+                            {consultation.suggested_names.length} names generated
+                          </p>
+                        )}
+                      </div>
+                      <Eye className="w-5 h-5 text-primary" />
                     </div>
                   </div>
                 </Card>

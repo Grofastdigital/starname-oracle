@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import StarField from '@/components/StarField';
@@ -11,13 +11,21 @@ import { calculateAstrology, type BirthData, type AstrologyResult } from '@/util
 import { Star, Sparkles, Crown, ArrowLeft, CreditCard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 
 const Index = () => {
   const { profile, refreshProfile } = useAuth();
+  const location = useLocation();
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<AstrologyResult | null>(null);
+
+  // Check if there's a result from navigation state (from dashboard consultation click)
+  useEffect(() => {
+    if (location.state?.result) {
+      setResult(location.state.result);
+    }
+  }, [location.state]);
 
   const handleFormSubmit = async (data: BirthData) => {
     if (!profile || profile.credits < 1) {
@@ -100,6 +108,8 @@ const Index = () => {
 
   const handleNewConsultation = () => {
     setResult(null);
+    // Clear navigation state
+    window.history.replaceState({}, document.title);
   };
 
   return (
