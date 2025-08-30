@@ -30,7 +30,7 @@ const Pricing = () => {
       credits: 10,
       price: 499,
       popular: false,
-      features: ['10 Name Consultations', 'Basic Vedic Analysis', 'Email Support']
+      features: ['10 Vedic Name Consultations', 'Rashi & Nakshatra Analysis', 'Email Support', 'Lucky Numbers & Colors']
     },
     {
       id: 'popular',
@@ -38,7 +38,7 @@ const Pricing = () => {
       credits: 25,
       price: 999,
       popular: true,
-      features: ['25 Name Consultations', 'Detailed Vedic Analysis', 'Priority Email Support', 'PDF Reports']
+      features: ['25 Vedic Name Consultations', 'Detailed Astrological Analysis', 'Priority Email Support', 'PDF Reports', 'Phonetic Guidelines']
     },
     {
       id: 'premium',
@@ -46,7 +46,7 @@ const Pricing = () => {
       credits: 50,
       price: 1899,
       popular: false,
-      features: ['50 Name Consultations', 'Complete Astrological Analysis', '24/7 Priority Support', 'PDF Reports', 'Family Sharing']
+      features: ['50 Vedic Name Consultations', 'Complete Astrological Analysis', '24/7 Priority Support', 'PDF Reports', 'Family Sharing', 'Gemstone Recommendations']
     }
   ];
 
@@ -62,7 +62,9 @@ const Pricing = () => {
     document.body.appendChild(script);
 
     return () => {
-      document.body.removeChild(script);
+      if (document.body.contains(script)) {
+        document.body.removeChild(script);
+      }
     };
   }, []);
 
@@ -141,6 +143,9 @@ const Pricing = () => {
             await refreshProfile();
             
             toast.success(`Payment successful! ${verifyData.credits_added} credits added to your account.`);
+            
+            // Navigate to success page
+            window.location.href = '/payment-success';
           } catch (error) {
             console.error('Payment verification error:', error);
             toast.error('Payment completed but verification failed. Please contact support.');
@@ -258,12 +263,12 @@ const Pricing = () => {
               <div>
                 <Star className="w-12 h-12 text-primary mx-auto mb-4" />
                 <h4 className="text-lg font-semibold mb-2 text-foreground">Vedic AI Analysis</h4>
-                <p className="text-muted-foreground text-sm">Advanced algorithms analyze Vedic birth charts for authentic suggestions</p>
+                <p className="text-muted-foreground text-sm">Advanced algorithms analyze birth charts using authentic Vedic astrological principles</p>
               </div>
               <div>
                 <Crown className="w-12 h-12 text-accent mx-auto mb-4" />
-                <h4 className="text-lg font-semibold mb-2 text-foreground">Expert Astrologers</h4>
-                <p className="text-muted-foreground text-sm">Consultations based on traditional Vedic astrological principles</p>
+                <h4 className="text-lg font-semibold mb-2 text-foreground">Rashi & Nakshatra</h4>
+                <p className="text-muted-foreground text-sm">Names suggested based on your child's Rashi and Nakshatra for astrological alignment</p>
               </div>
               <div>
                 <CreditCard className="w-12 h-12 text-primary mx-auto mb-4" />
