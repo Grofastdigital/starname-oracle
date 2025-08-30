@@ -1,48 +1,35 @@
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* StarName Oracle - Celestial Design System */
 @layer base {
   :root {
-    --background: 218 47% 8%;
+    --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
-
-    --card: 221 39% 11%;
+    --card: 222.2 84% 4.9%;
     --card-foreground: 210 40% 98%;
-
-    --popover: 221 39% 11%;
+    --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
-
-    --primary: 47 96% 53%;
-    --primary-foreground: 221 39% 11%;
-
-    --secondary: 215 27.9% 16.9%;
+    --primary: 263.4 70% 50.4%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
-
-    --muted: 215 27.9% 16.9%;
-    --muted-foreground: 217.9 10.6% 64.9%;
-
-    --accent: 262 83% 58%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 142.1 76.2% 36.3%;
     --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
-
-    --border: 215 27.9% 16.9%;
-    --input: 215 27.9% 16.9%;
-    --ring: 47 96% 53%;
-
-    --radius: 0.75rem;
-
-    /* Cosmic gradients */
-    --cosmic-gradient: linear-gradient(135deg, hsl(218, 47%, 8%) 0%, hsl(262, 83%, 18%) 50%, hsl(47, 96%, 13%) 100%);
-    --nebula-gradient: linear-gradient(45deg, hsl(262, 83%, 58%) 0%, hsl(280, 100%, 70%) 50%, hsl(47, 96%, 53%) 100%);
-    --starlight-gradient: linear-gradient(90deg, hsl(47, 96%, 53%) 0%, hsl(45, 100%, 70%) 100%);
-    
-    /* Sacred geometry */
-    --golden-ratio: 1.618;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 263.4 70% 50.4%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
   }
 }
 
@@ -50,88 +37,94 @@
   * {
     @apply border-border;
   }
-
   body {
     @apply bg-background text-foreground;
-    background: var(--cosmic-gradient);
-    background-attachment: fixed;
-    overflow-x: hidden;
   }
 }
 
 @layer components {
   .cosmic-bg {
-    background: var(--cosmic-gradient);
+    background: linear-gradient(135deg, hsl(var(--background)) 0%, hsl(222.2 84% 8%) 50%, hsl(var(--background)) 100%);
+    position: relative;
   }
   
-  .nebula-gradient {
-    background: var(--nebula-gradient);
-  }
-  
-  .starlight-gradient {
-    background: var(--starlight-gradient);
+  .cosmic-bg::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+      radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.15) 0%, transparent 50%),
+      radial-gradient(circle at 40% 40%, rgba(120, 219, 226, 0.1) 0%, transparent 50%);
+    pointer-events: none;
   }
   
   .glass-card {
-    @apply backdrop-blur-md bg-card/20 border border-white/10;
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   }
   
-  .constellation-pattern {
-    background-image: 
-      radial-gradient(2px 2px at 20px 30px, hsl(47, 96%, 53%), transparent),
-      radial-gradient(2px 2px at 40px 70px, hsl(262, 83%, 58%), transparent),
-      radial-gradient(1px 1px at 90px 40px, hsl(47, 96%, 53%), transparent),
-      radial-gradient(1px 1px at 130px 80px, hsl(47, 96%, 53%), transparent),
-      radial-gradient(2px 2px at 160px 30px, hsl(262, 83%, 58%), transparent);
-    background-repeat: repeat;
-    background-size: 200px 100px;
+  .nebula-gradient {
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
   }
-}
-
-@layer utilities {
+  
   .text-cosmic {
-    background: var(--nebula-gradient);
-    background-clip: text;
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-  }
-  
-  .animate-float {
-    animation: float 6s ease-in-out infinite;
+    background-clip: text;
   }
   
   .animate-glow {
     animation: glow 2s ease-in-out infinite alternate;
   }
   
-  .animate-constellation {
-    animation: constellation 20s linear infinite;
+  .animate-spin-slow {
+    animation: spin 20s linear infinite;
   }
-}
-
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-20px);
+  
+  .animate-spin-reverse {
+    animation: spin-reverse 15s linear infinite;
   }
 }
 
 @keyframes glow {
   from {
-    box-shadow: 0 0 20px hsl(47, 96%, 53%, 0.3);
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.1);
   }
   to {
-    box-shadow: 0 0 30px hsl(47, 96%, 53%, 0.6), 0 0 40px hsl(262, 83%, 58%, 0.2);
+    box-shadow: 0 0 30px rgba(139, 92, 246, 0.2), 0 0 40px rgba(139, 92, 246, 0.1);
   }
 }
 
-@keyframes constellation {
+@keyframes spin-reverse {
   from {
-    background-position: 0% 0%;
+    transform: rotate(360deg);
   }
   to {
-    background-position: 200px 0%;
+    transform: rotate(0deg);
   }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--background));
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--primary));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--accent));
 }

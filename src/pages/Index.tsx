@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import StarField from '@/components/StarField';
+import ChakraBackground from '@/components/ChakraBackground';
 import BirthForm from '@/components/BirthForm';
 import AstrologyResults from '@/components/AstrologyResults';
 import ChatBot from '@/components/ChatBot';
@@ -104,6 +105,7 @@ const Index = () => {
   return (
     <div className="min-h-screen cosmic-bg relative">
       <StarField />
+      <ChakraBackground />
       <ChatBot />
       
       <div className="relative z-10 container mx-auto px-4 py-8">
