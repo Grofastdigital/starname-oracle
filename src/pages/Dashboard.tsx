@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { supabase } from '@/integrations/supabase/client'
@@ -177,7 +176,7 @@ const Dashboard = () => {
           
           <Card className="glass-card p-6 text-center hover:scale-105 transition-all duration-300 hover:shadow-lg hover:shadow-primary/20">
             <MessageCircle className="w-12 h-12 text-primary mx-auto mb-4" />
-            <h3 className="text-xl font-semibold mb-2 text-foreground">🤖 AI Name Assistant</h3>
+            <h3 className="text-xl font-semibold mb-2 text-foreground">🤖 AI Voice Assistant</h3>
             <p className="text-muted-foreground mb-4">Chat with AI for name guidance and cosmic insights</p>
             <Button 
               variant="outline"

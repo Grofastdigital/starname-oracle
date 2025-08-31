@@ -1,9 +1,8 @@
-
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { MessageCircle, Send, X, Star, Crown, Sparkles } from 'lucide-react';
+import { MessageCircle, Send, X, Star, Crown, Sparkles, Mic, MicOff } from 'lucide-react';
 
 interface Message {
   id: number;
@@ -17,12 +16,14 @@ const ChatBot = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
-      text: "Hello! I'm your AstroName AI assistant. I can help you with name meanings, astrological guidance, and Vedic naming traditions. How can I assist you today?",
+      text: "Hello! I'm your AstroName AI Voice Assistant. I can help you with name meanings, astrological guidance, and Vedic naming traditions. You can type or speak to me. How can I assist you today?",
       isUser: false,
       timestamp: new Date()
     }
   ]);
   const [inputMessage, setInputMessage] = useState('');
+  const [isListening, setIsListening] = useState(false);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
 
   const handleSendMessage = () => {
     if (!inputMessage.trim()) return;
@@ -45,9 +46,58 @@ const ChatBot = () => {
         timestamp: new Date()
       };
       setMessages(prev => [...prev, botResponse]);
+      
+      // Text-to-speech for bot response
+      if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(botResponse.text);
+        utterance.rate = 0.8;
+        utterance.pitch = 1.1;
+        speechSynthesis.speak(utterance);
+      }
     }, 1000);
 
     setInputMessage('');
+  };
+
+  const startListening = () => {
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
+      const recognition = new SpeechRecognition();
+      
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.lang = 'en-US';
+
+      recognition.onstart = () => {
+        setIsListening(true);
+      };
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        setInputMessage(transcript);
+        setIsListening(false);
+      };
+
+      recognition.onerror = () => {
+        setIsListening(false);
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+      };
+
+      recognitionRef.current = recognition;
+      recognition.start();
+    } else {
+      alert('Speech recognition not supported in this browser');
+    }
+  };
+
+  const stopListening = () => {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+    }
   };
 
   const getAIResponse = (userInput: string): string => {
@@ -81,11 +131,7 @@ const ChatBot = () => {
       return "Birth time is crucial for accurate astrological calculations! It determines the exact nakshatra, rashi, and planetary positions. Even a difference of minutes can change the cosmic influences. Make sure to include AM/PM when providing birth time for the most accurate name suggestions.";
     }
     
-    if (input.includes('credit') || input.includes('payment') || input.includes('package')) {
-      return "Our credit packages offer great value! The Basic package (₹499 for 50 credits) is perfect for one child, Popular package (₹999 for 100 credits) works for multiple consultations, and Premium package (₹1899 for 200 credits) includes astrologer consultations. Each consultation uses 1 credit.";
-    }
-    
-    return "I'm here to help with all your astrological naming queries! You can ask me about:\n\n🌟 Name meanings and significance\n🔮 Rashi and Nakshatra guidance\n📊 Lucky numbers and colors\n🌍 Regional naming traditions\n⏰ Birth time importance\n💎 Cosmic connections\n\nWhat would you like to explore?";
+    return "I'm here to help with all your astrological naming queries! You can ask me about:\n\n🌟 Name meanings and significance\n🔮 Rashi and Nakshatra guidance\n📊 Lucky numbers and colors\n🌍 Regional naming traditions\n⏰ Birth time importance\n💎 Cosmic connections\n\nWhat would you like to explore? Feel free to speak or type!";
   };
 
   const quickSuggestions = [
@@ -115,7 +161,7 @@ const ChatBot = () => {
           data-testid="chatbot-toggle"
         >
           <MessageCircle className="w-6 h-6 mr-2" />
-          Chat With AI
+          AI Voice Assistant
         </Button>
       </div>
     );
@@ -128,7 +174,7 @@ const ChatBot = () => {
         <div className="flex items-center justify-between p-4 border-b border-primary/20">
           <div className="flex items-center gap-2">
             <MessageCircle className="w-5 h-5 text-primary" />
-            <h3 className="font-semibold text-cosmic">AstroName AI Assistant</h3>
+            <h3 className="font-semibold text-cosmic">AI Voice Assistant</h3>
           </div>
           <Button
             variant="ghost"
@@ -187,16 +233,22 @@ const ChatBot = () => {
           </div>
         </div>
 
-        {/* Input */}
+        {/* Input with Voice */}
         <div className="p-4 border-t border-primary/20">
           <div className="flex gap-2">
             <Input
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
-              placeholder="Ask about names, astrology, or cosmic guidance..."
+              placeholder="Type or speak your question..."
               onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-              className="text-sm"
+              className="text-sm flex-1"
             />
+            <Button
+              onClick={isListening ? stopListening : startListening}
+              className={`px-3 ${isListening ? 'bg-red-500 hover:bg-red-600' : 'nebula-gradient'} text-white`}
+            >
+              {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+            </Button>
             <Button
               onClick={handleSendMessage}
               className="nebula-gradient text-white px-3"
@@ -204,6 +256,11 @@ const ChatBot = () => {
               <Send className="w-4 h-4" />
             </Button>
           </div>
+          {isListening && (
+            <p className="text-xs text-center text-primary mt-2 animate-pulse">
+              🎤 Listening... Speak now
+            </p>
+          )}
         </div>
       </Card>
     </div>

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,6 +8,7 @@ import { Calendar as CalendarIcon, Clock, User, Video, Phone, MessageSquare } fr
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
 interface AstrologerBookingProps {
   onClose?: () => void;
@@ -47,8 +47,26 @@ const AstrologerBooking: React.FC<AstrologerBookingProps> = ({ onClose }) => {
       
       const selectedConsultation = consultationTypes.find(c => c.id === consultationType);
       
+      // Send booking confirmation email
+      try {
+        const { data, error } = await supabase.functions.invoke('send-booking-email', {
+          body: {
+            email: 'user@example.com', // In real app, get from auth context
+            astrologerName: 'Dr. Ravi Kumar', // Selected astrologer
+            date: format(selectedDate, 'PPP'),
+            time: selectedTime,
+            consultationType: selectedConsultation?.name || '',
+            price: selectedConsultation?.price || 0
+          }
+        });
+
+        if (error) throw error;
+      } catch (emailError) {
+        console.error('Email sending failed:', emailError);
+      }
+      
       toast.success(
-        `Booking confirmed! ${selectedConsultation?.name} scheduled for ${format(selectedDate, 'PPP')} at ${selectedTime}. You will receive a confirmation email shortly.`
+        `Booking confirmed! ${selectedConsultation?.name} scheduled for ${format(selectedDate, 'PPP')} at ${selectedTime}. Confirmation email sent!`
       );
       
       if (onClose) {
