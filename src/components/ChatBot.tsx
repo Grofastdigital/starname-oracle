@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { MessageCircle, Send, X, Star, Crown, Sparkles, Mic, MicOff } from 'lucide-react';
+import { MessageCircle, Send, X, Star, Crown, Sparkles, Mic, MicOff, Volume2 } from 'lucide-react';
 
 interface Message {
   id: number;
@@ -23,6 +23,7 @@ const ChatBot = () => {
   ]);
   const [inputMessage, setInputMessage] = useState('');
   const [isListening, setIsListening] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
 
   const handleSendMessage = () => {
@@ -46,23 +47,34 @@ const ChatBot = () => {
         timestamp: new Date()
       };
       setMessages(prev => [...prev, botResponse]);
-      
-      // Text-to-speech for bot response
-      if ('speechSynthesis' in window) {
-        const utterance = new SpeechSynthesisUtterance(botResponse.text);
-        utterance.rate = 0.8;
-        utterance.pitch = 1.1;
-        speechSynthesis.speak(utterance);
-      }
     }, 1000);
 
     setInputMessage('');
   };
 
+  const speakText = (text: string) => {
+    if ('speechSynthesis' in window) {
+      // Stop any ongoing speech
+      window.speechSynthesis.cancel();
+      
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 0.8;
+      utterance.pitch = 1.1;
+      utterance.volume = 0.8;
+      
+      utterance.onstart = () => setIsSpeaking(true);
+      utterance.onend = () => setIsSpeaking(false);
+      utterance.onerror = () => setIsSpeaking(false);
+      
+      window.speechSynthesis.speak(utterance);
+    }
+  };
+
   const startListening = () => {
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-      const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
-      const recognition = new SpeechRecognition();
+    const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+    
+    if (SpeechRecognitionAPI) {
+      const recognition = new SpeechRecognitionAPI();
       
       recognition.continuous = false;
       recognition.interimResults = false;
@@ -97,6 +109,13 @@ const ChatBot = () => {
     if (recognitionRef.current) {
       recognitionRef.current.stop();
       setIsListening(false);
+    }
+  };
+
+  const stopSpeaking = () => {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
     }
   };
 
@@ -197,16 +216,28 @@ const ChatBot = () => {
                 className={`max-w-xs p-3 rounded-lg ${
                   message.isUser
                     ? 'nebula-gradient text-white'
-                    : 'bg-muted text-foreground'
+                    : 'bg-muted text-foreground relative'
                 }`}
               >
                 <p className="text-sm whitespace-pre-line">{message.text}</p>
-                <p className="text-xs opacity-70 mt-1">
-                  {message.timestamp.toLocaleTimeString([], {
-                    hour: '2-digit',
-                    minute: '2-digit'
-                  })}
-                </p>
+                <div className="flex items-center justify-between mt-1">
+                  <p className="text-xs opacity-70">
+                    {message.timestamp.toLocaleTimeString([], {
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
+                  </p>
+                  {!message.isUser && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => speakText(message.text)}
+                      className="h-6 w-6 p-0 hover:bg-primary/20"
+                    >
+                      <Volume2 className="w-3 h-3" />
+                    </Button>
+                  )}
+                </div>
               </div>
             </div>
           ))}
@@ -249,6 +280,14 @@ const ChatBot = () => {
             >
               {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
             </Button>
+            {isSpeaking && (
+              <Button
+                onClick={stopSpeaking}
+                className="px-3 bg-red-500 hover:bg-red-600 text-white"
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            )}
             <Button
               onClick={handleSendMessage}
               className="nebula-gradient text-white px-3"
@@ -259,6 +298,11 @@ const ChatBot = () => {
           {isListening && (
             <p className="text-xs text-center text-primary mt-2 animate-pulse">
               🎤 Listening... Speak now
+            </p>
+          )}
+          {isSpeaking && (
+            <p className="text-xs text-center text-primary mt-2 animate-pulse">
+              🔊 Speaking... Click X to stop
             </p>
           )}
         </div>
